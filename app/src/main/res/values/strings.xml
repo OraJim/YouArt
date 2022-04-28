@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">YouArt</string>
+    <string name="email_field">E-Mail</string>
+    <string name="button_login">Log In</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign up.</string>
+    <string name="youart">YouArt</string>
+    <string name="password">Password</string>
+    <string name="user_name">User Name</string>
+    <string name="register">Register</string>
+</resources>

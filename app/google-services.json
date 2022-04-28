@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "565987298976",
+    "project_id": "youartapp",
+    "storage_bucket": "youartapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565987298976:android:1dc8f5b9da15ff08ab83c5",
+        "android_client_info": {
+          "package_name": "com.example.youart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "565987298976-j4gdtvf2gl75mfk0qibhtlfat8b7ae91.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG8TSJKPXiltHj9t987MHLtpm5ah-GiY8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "565987298976-j4gdtvf2gl75mfk0qibhtlfat8b7ae91.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
