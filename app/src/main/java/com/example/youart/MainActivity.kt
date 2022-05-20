@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUI(user: FirebaseUser?) {
         if(user != null){
-            val intent = Intent(this, InputUserInfo::class.java).apply { }
+            val intent = Intent(this,ProfilePage::class.java).apply { }//InputUserInfo::class.java).apply { }
             intent.putExtra("Uname", "")
             startActivity(intent)
         }

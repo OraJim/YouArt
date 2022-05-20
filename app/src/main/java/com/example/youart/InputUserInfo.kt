@@ -1,13 +1,12 @@
 package com.example.youart
 
 import android.Manifest
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -16,17 +15,24 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import java.io.File
 
 class InputUserInfo : AppCompatActivity() {
+    private val PICK_IMAGE_REQUEST = 71
     private lateinit var auth: FirebaseAuth
     lateinit var uName: EditText
     lateinit var storage: FirebaseStorage
+    private var storageReference: StorageReference? = null
     lateinit var currentUser: FirebaseUser
     lateinit var uImage: ImageView
+    var profileUri: Uri? = null
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,15 +49,15 @@ class InputUserInfo : AppCompatActivity() {
         uName.setText(intent.getStringExtra("Uname"))
         uImage = findViewById((R.id.imageView))
         storage = Firebase.storage
-        CreateStoreReference()
+        //CreateStoreReference()
     }
 
-    private fun CreateStoreReference(){
+    private fun CreateStoreReference(): StorageReference? {
         val storageRef = storage.reference
         var imagesRef: StorageReference? = storageRef.child("images")
         var picRef : StorageReference? = storageRef.child("images/"+currentUser.uid+"/")
-
         Log.d("Picture", picRef.toString())
+        return picRef
     }
     fun clickedProfileButton(v: View){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -76,7 +82,53 @@ class InputUserInfo : AppCompatActivity() {
         //Intent to pick image
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
-        startActivityForResult(intent, IMAGE_PICK_CODE)
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST)
+        //startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+    fun clickedSaveButton(v: View) {
+        val storageRef = storage.reference
+        var imagesRef: StorageReference? = storageRef.child("images")
+       // var file = Uri.fromFile(File(uImage.getTag().toString()))
+        var picRef : StorageReference = storageRef.child("images/"+currentUser.uid)
+        //upload the image to DataStore
+        val uploadTask = picRef.putFile(profileUri!!)
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener {
+            // Handle unsuccessful uploads
+            Log.d("ImageTest", "Failed uploading Image")
+        }.addOnSuccessListener { taskSnapshot ->
+            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+            // ...
+            Log.d("ImageTest", "Succesfully uploaded Image")
+        }
+
+        val urlTask = uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            picRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
+                Log.d("ImageTest", "ImageUri is:" + downloadUri)
+                val profileUpdates = userProfileChangeRequest {
+                    displayName = uName.text.toString()
+                    photoUri = downloadUri//Uri.parse("https://example.com/jane-q-user/profile.jpg")
+                }
+                currentUser!!.updateProfile(profileUpdates)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d("UserUpdate", "User profile updated.")
+                        }
+                    }
+            } else {
+                // Handle failures
+                // ...
+            }
+        }
+
     }
     companion object {
         //image pick code
@@ -107,8 +159,16 @@ class InputUserInfo : AppCompatActivity() {
     //handle result of picked image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
+       // if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+            if(data == null || data.data == null){
+                return
+            }
+            Log.d("UpdatePic", "Updating Pic")
             uImage.setImageURI(data?.data)
+            //uImage.setTag(data?.data)
+            profileUri = data?.data
+           // Log.d("UpdatePic", getRealPathFromURI(profileUri))
         }
     }
 }
