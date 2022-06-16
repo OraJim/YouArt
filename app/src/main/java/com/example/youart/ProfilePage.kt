@@ -67,6 +67,12 @@ class ProfilePage : AppCompatActivity() {
                 editUserInfo()
                 true
             }
+            R.id.createPost -> {
+                val intent = Intent(this,CreatePost::class.java).apply { }//InputUserInfo::class.java).apply { }
+                intent.putExtra("Uname", "")
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

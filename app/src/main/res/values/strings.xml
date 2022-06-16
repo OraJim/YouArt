@@ -21,4 +21,10 @@
     <string name="string_safe">Save</string>
     <string name="upload_post_txt">Upload your post or video</string>
     <string name="create_post_btn">Create a post</string>
+    <string name="upload_title_txt">Upload your avatar</string>
+    <string name="fullname_edt">Full Name</string>
+    <string name="confirm_password_edt">Confirm Password</string>
+    <string name="register_btn">Register</string>
+    <string name="email_edt">Email</string>
+    <string name="password_edt">Password</string>
 </resources>

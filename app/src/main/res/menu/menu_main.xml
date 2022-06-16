@@ -6,6 +6,11 @@
         android:icon="@drawable/ic_arrow_back"
         android:title="Compose"
         app:showAsAction="ifRoom">
-
+    </item>
+    <item
+        android:id="@+id/createPost"
+        android:icon="@drawable/ic_user"
+        app:showAsAction="ifRoom|withText"
+        android:title="Profile">
     </item>
 </menu>

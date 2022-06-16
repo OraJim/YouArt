@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -132,6 +133,10 @@ class ProfilePageFragment : Fragment() {
                 Log.d("ImageTest", "ByteSize IT is:" + it.size)
                 val bmp = BitmapFactory.decodeByteArray(it, 0, it.size);
                 Log.d("ImageTest", "ByteSize Pic is:" + it.size)
+                Glide.with(this)
+                    .load(bmp)
+                    .circleCrop()
+                    .into(authorAvatarIv!!)
                 authorAvatarIv!!.setImageBitmap(bmp)
             }.addOnFailureListener {
                 // Handle any errors
