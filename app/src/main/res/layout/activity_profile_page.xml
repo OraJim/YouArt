@@ -12,52 +12,28 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#C5D8D2"></androidx.appcompat.widget.Toolbar>
+        android:background="#C5D8D2"
+        ></androidx.appcompat.widget.Toolbar>
 
-    <EditText
-        android:id="@+id/editTextUnameProfile"
-        android:layout_width="228dp"
-        android:layout_height="147dp"
-        android:layout_marginBottom="332dp"
-        android:ems="10"
-        android:inputType="none"
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/flFragment"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.5"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.153"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/editTextTextPersonName2"
-        android:layout_width="154dp"
-        android:layout_height="25dp"
-        android:ems="10"
-        android:inputType="none"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.108"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.307" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="151dp"
-        android:layout_height="140dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.107"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.103"
-        app:srcCompat="@drawable/ic_baseline_image_24" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="409dp"
-        android:layout_height="330dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></LinearLayout>
+        app:menu="@menu/b_nav_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

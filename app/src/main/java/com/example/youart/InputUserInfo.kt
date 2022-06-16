@@ -8,10 +8,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -31,9 +34,7 @@ class InputUserInfo : AppCompatActivity() {
     lateinit var currentUser: FirebaseUser
     lateinit var uImage: ImageView
     var profileUri: Uri? = null
-
-
-
+    lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,8 @@ class InputUserInfo : AppCompatActivity() {
             //reload Main page to Real Main Page of Loged in User
             //reload();
         }
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar);
         uName = findViewById(R.id.editTextUname)
         uName.setText(intent.getStringExtra("Uname"))
         uImage = findViewById((R.id.imageView))
@@ -58,6 +61,24 @@ class InputUserInfo : AppCompatActivity() {
         var picRef : StorageReference? = storageRef.child("images/"+currentUser.uid+"/")
         Log.d("Picture", picRef.toString())
         return picRef
+    }
+    // Menu icons are inflated just as they were with actionbar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.getItemId()) {
+            R.id.editUser -> {
+                val intent = Intent(this,ProfilePage::class.java).apply { }
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
     fun clickedProfileButton(v: View){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){

@@ -19,4 +19,6 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="string_description">Description</string>
     <string name="string_safe">Save</string>
+    <string name="upload_post_txt">Upload your post or video</string>
+    <string name="create_post_btn">Create a post</string>
 </resources>
