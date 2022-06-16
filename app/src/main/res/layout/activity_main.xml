@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,94 +5,106 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="199dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="16dp"
-        android:drawablePadding="12dp"
-        android:hint="@string/youart"
-        android:text="@string/youart"
-        android:textAlignment="center"
-        android:textSize="48sp"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="4">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/plusIv"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginBottom="2dp"
+                    android:src="@drawable/plus" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="124dp"
+                    android:layout_height="124dp"
+                    android:layout_marginTop="4dp"
+                    android:src="@drawable/logo" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right">
+
+                    <ImageView
+                        android:id="@+id/chatIv"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="2dp"
+                        android:src="@drawable/chat" />
+
+                    <ImageView
+                        android:id="@+id/logoutIv"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="right"
+                        android:layout_marginBottom="2dp"
+                        android:src="@drawable/power_off" />
+                </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.Toolbar>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <EditText
-        android:id="@+id/editTextLPassword"
-        android:layout_width="wrap_content"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:drawableStart="@drawable/ic_lock"
-        android:ems="10"
-        android:hint="@string/password"
-        android:importantForAutofill="no"
-        android:inputType="textPassword"
-        android:minHeight="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextLEmail" />
-
-    <EditText
-        android:id="@+id/editTextLEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="96dp"
-        android:drawableStart="@drawable/ic_email"
-        android:ems="10"
-        android:hint="@string/email_field"
-        android:importantForAutofill="no"
-        android:inputType="textEmailAddress"
-        android:minHeight="48dp"
-        android:text="@string/email_field"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="149dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="84dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/no_account"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:background="@color/white"
+        app:itemBackground="@color/white"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/button2"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="95dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="4dp"
-        android:onClick="sendMessage"
-        android:text="@string/sign_up"
-        android:textColor="#5959E4"
-        android:textSize="12sp"
-        app:backgroundTint="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textView2" />
-
-    <Button
-        android:id="@+id/logIn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:hint="@string/button_login"
-        android:text="@string/button_login"
-        android:onClick="logInUser"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextLEmail"
-        app:layout_constraintVertical_bias="0.237" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/container"
+        app:menu="@menu/b_nav_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>

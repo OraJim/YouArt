@@ -126,6 +126,7 @@ class ProfilePageFragment : Fragment() {
     private fun getProfile() {
         if(currentUser != null){
             Log.d("ImageTest", "ImageUri is:" + currentUser.photoUrl.toString())
+            Log.d("ImageTest", "User is:" + currentUser)
             storageReference =storage.getReferenceFromUrl(currentUser.photoUrl.toString())//createUPicStoreReference()
             val ONE_MEGABYTE: Long = 1024 * 1024
             storageReference!!.getBytes(ONE_MEGABYTE).addOnSuccessListener {

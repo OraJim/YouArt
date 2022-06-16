@@ -13,7 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -23,7 +22,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import java.io.File
 
 class InputUserInfo : AppCompatActivity() {
     private val PICK_IMAGE_REQUEST = 71
@@ -62,24 +60,7 @@ class InputUserInfo : AppCompatActivity() {
         Log.d("Picture", picRef.toString())
         return picRef
     }
-    // Menu icons are inflated just as they were with actionbar
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
-        return when (item.getItemId()) {
-            R.id.editUser -> {
-                val intent = Intent(this,ProfilePage::class.java).apply { }
-                startActivity(intent)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
     fun clickedProfileButton(v: View){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==

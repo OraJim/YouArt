@@ -1,10 +1,17 @@
 package com.example.youart
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.*
+import com.google.firebase.ktx.Firebase
 
 /**
  * A simple [Fragment] subclass.
@@ -15,6 +22,14 @@ class FeedFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    private var postRv: RecyclerView? = null
+
+    private var pDialog: ProgressDialog? = null
+    private var mDatabase: DatabaseReference? = null
+    private var posts: ArrayList<Post>? = null
+    private var adapter: PostAdapter? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +47,121 @@ class FeedFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_feed, container, false)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initViews()
+        initFirebaseDatabase()
+        getPosts()
+    }
+
+    private fun initViews() {
+        pDialog = ProgressDialog(this.context)
+        pDialog!!.setMessage("Loading")
+        pDialog!!.setCanceledOnTouchOutside(false)
+
+        postRv = requireView().findViewById(R.id.postRv)
+    }
+
+    private fun initFirebaseDatabase() {
+        mDatabase =
+            FirebaseDatabase.getInstance(Constants.FIREBASE_REALTIME_DATABASE_URL).getReference()
+    }
+
+    private fun initRecyclerView(posts: ArrayList<Post>?) {
+        if (posts == null || posts.size == 0) {
+            return;
+        }
+        postRv!!.layoutManager = LinearLayoutManager(this.context)
+        val cometChatUser = Firebase.auth.currentUser
+        val cometChatUserId = cometChatUser!!.uid
+        adapter = this.context?.let { PostAdapter(this, mDatabase!!, it, posts, cometChatUserId) }
+        postRv!!.adapter = adapter
+        pDialog!!.dismiss()
+    }
+
+    private fun hasLiked(post: Post?, id: String?) {
+        if (post?.likes == null || post?.likes?.size === 0 || id == null) {
+            post?.hasLiked = false
+            return;
+        }
+        for (like in post.likes!!) {
+            if (like.equals(id)) {
+                post.hasLiked = true;
+                return;
+            }
+        }
+        post.hasLiked = false
+    }
+
+    private fun hasFollowed(index: Int?, post: Post?, id: String?) {
+        if (post?.author == null || post.author?.uid == null || id == null) {
+            return;
+        }
+        val userId = post.author?.uid
+        mDatabase?.child("users")?.child(userId!!)?.get()?.addOnSuccessListener {
+            val user = it.getValue(UserModel::class.java)
+            if (user?.followers == null || user.followers?.size == 0) {
+                post.hasFollowed = false
+            } else {
+                for (follower in user.followers!!) {
+                    if (follower.equals(id)) {
+                        post.hasFollowed = true
+                    }
+                }
+            }
+            posts!!.set(index!!, post)
+            if (adapter != null) {
+                adapter!!.notifyDataSetChanged()
+            }
+        }?.addOnFailureListener {
+        }
+    }
+
+    private fun updateFollow() {
+        val cometChatUser = Firebase.auth.currentUser
+        val cometChatUserId = cometChatUser!!.uid
+        for ((index, post) in posts!!.withIndex()) {
+            hasFollowed(index, post, cometChatUserId)
+        }
+    }
+
+    fun getPosts() {
+        val cometChatUser = Firebase.auth.currentUser
+        if (cometChatUser != null) {
+            pDialog!!.show()
+            mDatabase?.child(Constants.FIREBASE_POSTS)?.orderByChild(Constants.FIREBASE_ID_KEY)
+                ?.addValueEventListener(object :
+                    ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        posts = ArrayList()
+                        if (dataSnapshot.children.count() > 0) {
+                            for (postSnapshot in dataSnapshot.children) {
+                                val post = postSnapshot.getValue(Post::class.java)
+                                if (post != null) {
+                                    hasLiked(post, cometChatUser.uid)
+                                    posts!!.add(post)
+                                }
+                            }
+                            initRecyclerView(posts)
+                            updateFollow()
+                        } else {
+                            pDialog!!.dismiss()
+                        }
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        pDialog!!.dismiss()
+                        Toast.makeText(
+                            context,
+                            "Cannot fetch list of posts",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+        }
+    }
+
 
     companion object {
         /**

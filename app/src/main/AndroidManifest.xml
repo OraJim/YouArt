@@ -13,10 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
+            android:name=".DetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".CreatePost"
             android:exported="false" />
         <activity
-            android:name=".ProfilePage"
+            android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".InputUserInfo"
@@ -25,7 +28,7 @@
             android:name=".register"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".LogIn"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

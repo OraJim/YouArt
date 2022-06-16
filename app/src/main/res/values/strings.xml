@@ -27,4 +27,8 @@
     <string name="register_btn">Register</string>
     <string name="email_edt">Email</string>
     <string name="password_edt">Password</string>
+    <string name="ella_txt">Ella</string>
+    <string name="follow_txt">Follow</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

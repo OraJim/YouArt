@@ -1,83 +1,144 @@
 package com.example.youart
 
-import android.content.ContentValues.TAG
+import android.app.AlertDialog
+import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.service.controls.ControlsProviderService.TAG
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener  {
     private lateinit var auth: FirebaseAuth
-    lateinit var uMail: EditText
-    lateinit var uPw: EditText
+    lateinit var storage: FirebaseStorage
+    lateinit var currentUser: FirebaseUser
+    private var plusIv: ImageView? = null
+    private var chatIv: ImageView? = null
+    private var logoutIv: ImageView? = null
+    private var bottomNavigationView: BottomNavigationView? = null
 
+    private var pDialog: ProgressDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         auth = Firebase.auth
-    }
-
-    public override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
-        if(currentUser != null){
+        val curUser = auth.currentUser
+        if(curUser != null){
+            currentUser = curUser
             //reload Main page to Real Main Page of Loged in User
             //reload();
         }
-        uMail = findViewById(R.id.editTextLEmail)
-        uPw = findViewById((R.id.editTextLPassword))
+        initViews()
+        initEvents()
+        initFragment(savedInstanceState)
     }
 
-    public fun logInUser(view: View){
-        Log.d(MainActivity.TAG, "Login in user")
-        signIn(uMail.text.toString(), uPw.text.toString())
+    private fun initViews() {
+        plusIv = findViewById(R.id.plusIv)
+        chatIv = findViewById(R.id.chatIv)
+        logoutIv = findViewById(R.id.logoutIv)
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
+
+        pDialog = ProgressDialog(this)
+        pDialog!!.setMessage("Loading")
+        pDialog!!.setCanceledOnTouchOutside(false)
     }
 
-    private fun signIn(email: String, password: String) {
-        // [START sign_in_with_email]
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(MainActivity.TAG, "signInWithEmail:success")
-                    val user = auth.currentUser
-                    updateUI(user)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(MainActivity.TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
-                    updateUI(null)
-                }
-            }
-        // [END sign_in_with_email]
+    private fun initEvents() {
+        plusIv!!.setOnClickListener(this)
+        chatIv!!.setOnClickListener(this)
+        logoutIv!!.setOnClickListener(this)
+        bottomNavigationView!!.setOnNavigationItemSelectedListener(this)
     }
-
-    private fun updateUI(user: FirebaseUser?) {
-        if(user != null){
-            val intent = Intent(this,ProfilePage::class.java).apply { }//InputUserInfo::class.java).apply { }
-            intent.putExtra("Uname", "")
-            startActivity(intent)
+    private fun initFragment(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
+            val fragment = FeedFragment()
+            supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                .commit()
         }
     }
 
-
-    /** Called when the user taps the Send button */
-    fun sendMessage(view: View) {
-        // Do something in response to button
-        val intent = Intent(this, register::class.java).apply { }
+    private fun goToLoginActivity() {
+        intent = Intent(this, LogIn::class.java)
         startActivity(intent)
     }
-    companion object {
-        private const val TAG = "EmailPassword"
+
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        if (currentUser == null) {
+            goToLoginActivity();
+        }
+    }
+    private fun goToCreatePost() {
+        intent = Intent(this@MainActivity, CreatePost::class.java)
+        startActivity(intent)
+    }
+    private fun logout() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setMessage("Do you want to logout ?")
+            .setCancelable(false)
+            .setPositiveButton("Proceed", DialogInterface.OnClickListener {
+                    dialog, id -> handleLogout()
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener {
+                    dialog, id -> dialog.cancel()
+            })
+        val alert = dialogBuilder.create()
+        alert.setTitle("Logout")
+        alert.show()
+    }
+    private fun handleLogout() {
+        //todo
+    }
+    private fun goToChat() {
+        //todo
+    }
+    override fun onClick(view: View?) {
+        when(view!!.id) {
+            R.id.plusIv -> goToCreatePost()
+            R.id.logoutIv -> logout()
+            R.id.chatIv -> goToChat()
+        }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.home -> {
+                val fragment = FeedFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                    .commit()
+                return true
+            }
+            R.id.profile -> {
+                val fragment = ProfilePageFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                    .commit()
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun createUPicStoreReference(): StorageReference? {
+        val storageRef = storage.reference
+        var imagesRef: StorageReference? = storageRef.child("images")
+        var picRef : StorageReference? = storageRef.child("images/"+currentUser.uid+"/")
+        Log.d("Picture", picRef.toString())
+        return picRef
     }
 }

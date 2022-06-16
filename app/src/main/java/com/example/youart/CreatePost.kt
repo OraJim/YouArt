@@ -18,7 +18,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.OnSuccessListener
@@ -133,7 +132,7 @@ class CreatePost : AppCompatActivity() , View.OnClickListener {
     }
 
     private fun goToMainActivity() {
-        val intent = Intent(this,ProfilePage::class.java).apply { }//InputUserInfo::class.java).apply { }
+        val intent = Intent(this,MainActivity::class.java).apply { }//InputUserInfo::class.java).apply { }
         startActivity(intent)
     }
 

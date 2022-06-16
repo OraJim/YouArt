@@ -18,8 +18,8 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -186,7 +186,7 @@ class register : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun goToLoginActivity() {
-        intent = Intent(this@register, MainActivity::class.java)
+        intent = Intent(this@register, LogIn::class.java)
         startActivity(intent)
     }
 
@@ -197,17 +197,31 @@ class register : AppCompatActivity(), View.OnClickListener  {
         userModel.email = email
         userModel.photoUrl = avatar
         database = Firebase.database.reference;
-        database.child("users").child(userId!!).setValue(userModel)
+        database.child("users").child(userId!!).setValue(userModel).addOnSuccessListener {
+            goToLoginActivity()
+        }.addOnFailureListener{
+            Log.e("firebase", "Error setting data", it)
+        }
     }
 
-    private fun createFirebaseAccount(fullname: String?, email: String?, password: String?, avatar: String?) {
+    private fun createFirebaseAccount(fullname: String?, email: String?, password: String?, avatar: Uri?) {
         if (email != null && password != null) {
             auth = Firebase.auth
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        val userId = UUID.randomUUID()
-                        insertFirebaseDatabase(userId.toString(), fullname, email, avatar)
+                        val user = auth.currentUser
+                        val profileUpdates = userProfileChangeRequest {
+                            displayName = fullname.toString()
+                            photoUri = avatar//Uri.parse("https://example.com/jane-q-user/profile.jpg")
+                        }
+                        user!!.updateProfile(profileUpdates)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Log.d("UserUpdate", "User profile updated.")
+                                    insertFirebaseDatabase(user!!.uid, fullname, email, avatar.toString())
+                                }
+                            }
                     } else {
                         pDialog!!.dismiss()
                         Toast.makeText(this@register, "Cannot create your account, please try again", Toast.LENGTH_LONG).show();
@@ -222,8 +236,8 @@ class register : AppCompatActivity(), View.OnClickListener  {
     private fun uploadUserAvatar(fullname: String?, email: String?, password: String?) {
         val storage = Firebase.storage
         val storageRef = storage.reference
-        val uuid = UUID(1, 1)
-        val avatarRef = storageRef.child("users/" + uuid + ".jpeg")
+        val uuid = UUID.randomUUID()
+        val avatarRef = storageRef.child("users/" + uuid.toString() + ".jpeg")
         userAvatarIv?.isDrawingCacheEnabled = true
         userAvatarIv?.buildDrawingCache()
         val bitmap = (userAvatarIv?.drawable as BitmapDrawable).bitmap
@@ -237,7 +251,7 @@ class register : AppCompatActivity(), View.OnClickListener  {
         }.addOnSuccessListener { taskSnapshot ->
             avatarRef.getDownloadUrl().addOnSuccessListener(OnSuccessListener { uri ->
                 if (uri != null) {
-                    this.createFirebaseAccount(fullname, email, password, uri.toString())
+                    this.createFirebaseAccount(fullname, email, password, uri)
                 }
             })
         }
