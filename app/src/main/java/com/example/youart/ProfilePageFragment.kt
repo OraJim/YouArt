@@ -11,12 +11,15 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -52,6 +55,7 @@ class ProfilePageFragment : Fragment() {
     private var nFollowersTxt: TextView? = null
 
     private var postRv: RecyclerView? = null
+    private var mDatabase: DatabaseReference? = null
     lateinit var currentUser: FirebaseUser
     lateinit var storage: FirebaseStorage
     private var storageReference: StorageReference? = null
@@ -87,9 +91,12 @@ class ProfilePageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         initEvents()
-        //initFirebaseDatabase()
+        initFirebaseDatabase()
         getProfile()
         getPosts(1)
+    }
+    private fun initFirebaseDatabase() {
+        mDatabase = FirebaseDatabase.getInstance(Constants.FIREBASE_REALTIME_DATABASE_URL).getReference()
     }
 
     private fun initViews() {
@@ -146,9 +153,49 @@ class ProfilePageFragment : Fragment() {
 
         }
     }
-    fun getPosts(postCategory: Int){
-        Log.d("GETPOSTS", "TODO")
+    private fun initRecyclerView(posts: ArrayList<Post>?) {
+        if (posts == null) {
+            return;
+        }
+        postRv!!.layoutManager = GridLayoutManager(this.context, 3)
+        val adapter = this.context?.let { ProfilePostAdapter(it, posts) }
+        postRv!!.adapter = adapter
+        pDialog!!.dismiss()
     }
+    fun getPosts(postCategory: Int){
+        val cometChatUser = currentUser
+        if (cometChatUser != null) {
+            pDialog!!.show()
+            mDatabase?.child(Constants.FIREBASE_POSTS)?.orderByChild(Constants.FIREBASE_ID_KEY)
+                ?.addValueEventListener(object :
+                    ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        val posts = ArrayList<Post>()
+                        if (dataSnapshot.children.count() > 0) {
+                            for (postSnapshot in dataSnapshot.children) {
+                                val post = postSnapshot.getValue(Post::class.java)
+                                if (post != null && post.author!!.uid.equals(cometChatUser.uid)) {
+                                    posts.add(post)
+                                }
+                            }
+                        } else {
+                            pDialog!!.dismiss()
+                        }
+                        initRecyclerView(posts)
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        pDialog!!.dismiss()
+                        Toast.makeText(
+                            context,
+                            "Cannot fetch list of posts",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+        }
+    }
+
 
     companion object {
         /**
