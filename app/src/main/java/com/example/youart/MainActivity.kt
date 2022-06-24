@@ -130,6 +130,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
                     .commit()
                 return true
             }
+            R.id.notification -> {
+                val fragment = NotificationFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                    .commit()
+                return true
+            }
         }
         return false
     }

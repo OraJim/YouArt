@@ -2,12 +2,14 @@ package com.example.youart
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.VideoView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -18,6 +20,9 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 import kotlin.collections.ArrayList
 import com.example.youart.Notification
+import com.firebase.ui.auth.data.model.User
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 
 class PostAdapter(
     private var feedFragment: FeedFragment,
@@ -69,6 +74,21 @@ class PostAdapter(
         holder.postContentVv.setOnClickListener(View.OnClickListener {
             goToDetail(post)
         })
+        holder.authorAvatarIv.setOnClickListener(View.OnClickListener {
+            loadUserProfile(post.author!!)
+        })
+        holder.authorNameTxt.setOnClickListener(View.OnClickListener {
+            loadUserProfile(post.author!!)
+        })
+    }
+
+    private fun loadUserProfile(user: UserModel){
+        Log.d("LoadUSerProfile", user.uid!!)
+        val fragment = ProfilePageFragment()
+        val transaction = feedFragment.requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+        transaction.disallowAddToBackStack()
+        transaction.commit()
     }
 
     override fun getItemCount(): Int {
