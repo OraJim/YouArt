@@ -4,7 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable-v24/ic_email.xml" value="0.2985" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/arrow_back.xml" value="0.1185" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/dot.xml" value="0.1595" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/ic_arrow_back.xml" value="0.278" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/ic_auction_svgrepo_com.xml" value="0.1185" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/image_container.xml" value="0.1595" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/input.xml" value="0.1595" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/login_btn.xml" value="0.1595" />
@@ -15,6 +18,7 @@
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/activity_log_in.xml" value="0.25" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/activity_profile_page.xml" value="0.268" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/activity_profile_page_acitvity.xml" value="0.1" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/activity_register.xml" value="0.2850467289719626" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_feed.xml" value="0.27037037037037037" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_notification.xml" value="0.27037037037037037" />
@@ -33,5 +37,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.268" />
+      </ProjectState>
+    </option>
   </component>
 </project>

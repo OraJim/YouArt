@@ -6,13 +6,10 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -117,6 +114,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val bundle = Bundle()
+        bundle.putString("uid",currentUser.uid)
         when (item.itemId) {
             R.id.home -> {
                 val fragment = FeedFragment()
@@ -126,6 +125,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
             }
             R.id.profile -> {
                 val fragment = ProfilePageFragment()
+                fragment.arguments = bundle
                 supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
                     .commit()
                 return true

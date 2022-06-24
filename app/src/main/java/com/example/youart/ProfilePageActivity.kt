@@ -1,6 +1,8 @@
 package com.example.youart
-
+import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.app.ProgressDialog
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +18,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -24,27 +27,14 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-// TODO: Do Home and Auction Fragment
-// Redesign Input ProfileInfo & Profile Page
-//if no Post show default add Post Icon
-//Bottom Bar needs Create Post Option (Galerie and Kamera Picker)
-//Profile Page needs Gallerie Option
-//Home Page Display Other Posts
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
+class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfilePageFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ProfilePageFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var profileUid: String? = ""
 
     private var authorAvatarIv: ImageView? = null
     private var postIv: ImageView? = null
+    private var backIv: ImageView? = null
     private var videoIv: ImageView? = null
 
     private var postBottomLine: View? = null
@@ -63,7 +53,7 @@ class ProfilePageFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        setContentView(R.layout.activity_profile_page_acitvity)
         auth = Firebase.auth
         val curUser = auth.currentUser
         if(curUser != null){
@@ -71,35 +61,35 @@ class ProfilePageFragment : Fragment() {
             //reload Main page to Real Main Page of Loged in User
             //reload();
         }
-        profileUid = arguments?.getString("uid")
+        profileUid = intent?.getStringExtra("uid").toString()
 
         Log.d("TEST", profileUid!!)
         storage = Firebase.storage
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        var v = inflater.inflate(R.layout.fragment_profile_page, container, false)
-        return v
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         initViews()
         initEvents()
         initFirebaseDatabase()
-        getProfile(profileUid)
-        //getPosts(1)
+        getProfile(profileUid, this)
     }
+
     private fun initFirebaseDatabase() {
         mDatabase = FirebaseDatabase.getInstance(Constants.FIREBASE_REALTIME_DATABASE_URL).getReference()
     }
 
+    override fun onClick(view: View?) {
+        when(view!!.id) {
+            R.id.backIv -> goToHomeFeed()
+         //   R.id.logoutIv -> logout()
+          //  R.id.chatIv -> goToChat()
+        }
+    }
+    private fun goToHomeFeed(){
+        Log.d("GOHOOME", "TRYING")
+        val intent = Intent(this, MainActivity::class.java)
+        this.startActivity(intent)
+    }
     private fun initViews() {
-        val view = this.requireView()
+        val view = this
+        backIv = findViewById(R.id.backIv)
         authorAvatarIv = view.findViewById(R.id.authorAvatarIv)
         nPostsTxt = view.findViewById(R.id.nPostsTxt)
         nFollowersTxt = view.findViewById(R.id.nFollowersTxt)
@@ -111,12 +101,14 @@ class ProfilePageFragment : Fragment() {
 
         videoBottomLine?.isVisible = false
 
-        pDialog = ProgressDialog(this.context)
+
+        pDialog = ProgressDialog(view)
         pDialog!!.setMessage("Loading")
         pDialog!!.setCanceledOnTouchOutside(false)
     }
 
     private fun initEvents() {
+        backIv?.setOnClickListener(this)
         postIv?.setOnClickListener(View.OnClickListener {
             postBottomLine?.isVisible = true
             videoBottomLine?.isVisible = false
@@ -129,8 +121,7 @@ class ProfilePageFragment : Fragment() {
         })
     }
 
-    private fun getProfile(uid: String?) {
-        val self = this
+    private fun getProfile(uid: String?, activity: Activity) {
         if(currentUser != null){
             mDatabase?.child(Constants.FIREBASE_USERS+"/"+uid)
                 ?.addValueEventListener(object :
@@ -147,7 +138,7 @@ class ProfilePageFragment : Fragment() {
                                 Log.d("ImageTest", "ByteSize IT is:" + it.size)
                                 val bmp = BitmapFactory.decodeByteArray(it, 0, it.size);
                                 Log.d("ImageTest", "ByteSize Pic is:" + it.size)
-                                Glide.with(self)
+                                Glide.with(activity)
                                     .load(bmp)
                                     .circleCrop()
                                     .into(authorAvatarIv!!)
@@ -165,7 +156,7 @@ class ProfilePageFragment : Fragment() {
                     override fun onCancelled(databaseError: DatabaseError) {
                         pDialog!!.dismiss()
                         Toast.makeText(
-                            context,
+                            activity,
                             "Cannot fetch list of posts",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -173,17 +164,19 @@ class ProfilePageFragment : Fragment() {
                 })
         }
     }
+
     private fun initRecyclerView(posts: ArrayList<Post>?) {
         if (posts == null) {
             return;
         }
-        postRv!!.layoutManager = GridLayoutManager(this.context, 3)
-        val adapter = this.context?.let { ProfilePostAdapter(it, posts) }
+        postRv!!.layoutManager = GridLayoutManager(this, 3)
+        val adapter = this?.let { ProfilePostAdapter(it, posts) }
         postRv!!.adapter = adapter
         pDialog!!.dismiss()
     }
     fun getPosts(postCategory: Int){
         val cometChatUser = profileUser//currentUser
+        val self = this
         if (cometChatUser != null) {
             pDialog!!.show()
             mDatabase?.child(Constants.FIREBASE_POSTS)?.orderByChild(Constants.FIREBASE_ID_KEY)
@@ -207,7 +200,7 @@ class ProfilePageFragment : Fragment() {
                     override fun onCancelled(databaseError: DatabaseError) {
                         pDialog!!.dismiss()
                         Toast.makeText(
-                            context,
+                            self,
                             "Cannot fetch list of posts",
                             Toast.LENGTH_SHORT
                         ).show()

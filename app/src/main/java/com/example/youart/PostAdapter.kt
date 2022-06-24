@@ -2,6 +2,7 @@ package com.example.youart
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -84,11 +85,18 @@ class PostAdapter(
 
     private fun loadUserProfile(user: UserModel){
         Log.d("LoadUSerProfile", user.uid!!)
+        /*
+        val bundle = Bundle()
+        bundle.putString("uid",user.uid)
         val fragment = ProfilePageFragment()
+        fragment.arguments = bundle
         val transaction = feedFragment.requireActivity().supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
         transaction.disallowAddToBackStack()
-        transaction.commit()
+        transaction.commit()*/
+        val intent = Intent(this.context, ProfilePageActivity::class.java)
+        intent.putExtra("uid", user.uid)
+        this.context.startActivity(intent)
     }
 
     override fun getItemCount(): Int {
