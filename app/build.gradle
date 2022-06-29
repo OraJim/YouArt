@@ -54,6 +54,10 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.12.0'
 
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+    // FirebaseUI for Real-time database
+    implementation 'com.firebaseui:firebase-ui-database:7.2.0'
+    // Paging Library (For Pagination Only)
+    implementation 'android.arch.paging:runtime:1.0.1'
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:29.3.1')
 

@@ -1,17 +1,28 @@
 package com.example.youart
 
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 /**
  * A simple [Fragment] subclass.
@@ -29,15 +40,231 @@ class FeedFragment : Fragment() {
     private var mDatabase: DatabaseReference? = null
     private var posts: ArrayList<Post>? = null
     private var adapter: PostAdapter? = null
+    private var lastFocused : View? = null
+    private var lastInstanceState: Parcelable? = null
+    private var firstInit : Boolean = true
+    private var mBaseQuery =
+        FirebaseDatabase.getInstance(Constants.FIREBASE_REALTIME_DATABASE_URL).getReference()?.child(Constants.FIREBASE_POSTS)?.orderByChild(Constants.FIREBASE_ID_KEY)
+    var options: FirebaseRecyclerOptions<Post> = FirebaseRecyclerOptions.Builder<Post>()
+        .setQuery(mBaseQuery, Post::class.java)
+        .build()
+    var cometChatUser = Firebase.auth.currentUser
+    var cometChatUserId = cometChatUser!!.uid
+    private lateinit var mAdapter : FirebaseRecyclerAdapter<Post, PostAdapter.ViewHolder>
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mAdapter = getAdapter()
+        cometChatUser = Firebase.auth.currentUser
+        cometChatUserId = cometChatUser!!.uid
         /*
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }*/
+    }
+    private fun getAdapter(): FirebaseRecyclerAdapter<Post, PostAdapter.ViewHolder> {
+
+        val options = FirebaseRecyclerOptions.Builder<Post>()
+            .setLifecycleOwner(this)
+            .setQuery(getFirstQuery(), Post::class.java)
+            .build()
+
+        return object : FirebaseRecyclerAdapter<Post, PostAdapter.ViewHolder>(options) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostAdapter.ViewHolder {
+                return PostAdapter.ViewHolder(
+                    layoutInflater.inflate(
+                        R.layout.post_item,
+                        parent,
+                        false
+                    )
+                )
+            }
+
+            override fun onBindViewHolder(holder: PostAdapter.ViewHolder, position: Int, post: Post) {
+                //check if user has liked Post to show active heart Icon
+                hasLiked(post,cometChatUserId)
+                Glide.with(this@FeedFragment.requireContext())
+                    .load(post.author?.photoUrl)
+                    .circleCrop()
+                    .into(holder.authorAvatarIv);
+                holder.authorNameTxt.text = post.author?.displayName
+                holder.likeCountTxt.text = post.nLikes.toString() + " Likes"
+                if (cometChatUserId.equals(post.author!!.uid)) {
+                    holder.followTxt.isVisible = false
+                    holder.dot.isVisible = false
+                } else {
+                    holder.followTxt.text = if (post.hasFollowed === true) "Followed" else "Follow"
+                }
+                holder.postContentIv.isVisible = true
+                Glide.with(this@FeedFragment.requireContext())
+                    .load(post.content)
+                    .into(holder.postContentIv);
+                holder.postContentVv.isVisible = false
+
+                val heartIcon = if (post.hasLiked == true) R.drawable.heart_active else R.drawable.heart
+                Glide.with(this@FeedFragment.requireContext())
+                    .load(heartIcon)
+                    .into(holder.heartIv);
+                holder.followTxt.setOnClickListener(View.OnClickListener {
+                    toggleFollow(post)
+                })
+                holder.heartIv.setOnClickListener(View.OnClickListener {
+                    toggleLike(post, holder, it)
+                })
+                holder.postContentIv.setOnClickListener(View.OnClickListener {
+                   // goToDetail(post)
+                })
+                holder.postContentVv.setOnClickListener(View.OnClickListener {
+                   // goToDetail(post)
+                })
+                holder.authorAvatarIv.setOnClickListener(View.OnClickListener {
+                    loadUserProfile(post.author!!)
+                })
+                holder.authorNameTxt.setOnClickListener(View.OnClickListener {
+                    loadUserProfile(post.author!!)
+                })
+            }
+        }
+    }
+
+    private fun loadUserProfile(user: UserModel){
+        Log.d("LoadUSerProfile", user.uid!!)
+        /*
+        val bundle = Bundle()
+        bundle.putString("uid",user.uid)
+        val fragment = ProfilePageFragment()
+        fragment.arguments = bundle
+        val transaction = feedFragment.requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+        transaction.disallowAddToBackStack()
+        transaction.commit()*/
+        val intent = Intent(this.context, ProfilePageActivity::class.java)
+        intent.putExtra("uid", user.uid)
+        this.requireContext().startActivity(intent)
+    }
+    private fun updateFollow(post: Post?, cometChatUserId: String?) {
+        if (post == null || cometChatUserId == null) {
+            return
+        }
+        val parent = this.context
+        mDatabase?.child("users")?.child(post.author?.uid!!)?.get()?.addOnSuccessListener {
+            val user = it.getValue(UserModel::class.java)
+            val updatedFollow = ArrayList<String>()
+            if (user?.followers == null || user?.followers!!.size == 0) {
+                updatedFollow.add(cometChatUserId)
+            } else if (post.hasFollowed == true) {
+                for (follower in user.followers!!) {
+                    if (!follower.equals(cometChatUserId)) {
+                        updatedFollow.add(follower)
+                    }
+                }
+            } else if (post.hasFollowed == false) {
+                for (follower in user.followers!!) {
+                    updatedFollow.add(follower)
+                }
+                updatedFollow.add(cometChatUserId)
+                if (post.author!!.uid !== cometChatUserId) {
+                    val cometChatUser = Firebase.auth.currentUser
+                    val notificationId = UUID.randomUUID()
+                    val notificationMessage = cometChatUser!!.displayName + " has followed you"
+                    val notificationImage = cometChatUser!!.photoUrl
+                    val receiverId = post.author!!.uid
+                    val notification = Notification()
+                    notification.notificationMessage = notificationMessage
+                    notification.notificationImage = notificationImage.toString()
+                    notification.id = notificationId.toString()
+                    notification.receiverId = receiverId
+                    createNotification(notification)
+                }
+            }
+            user?.followers = updatedFollow
+            user?.nFollowers = updatedFollow.size
+            mDatabase = Firebase.database.reference;
+            mDatabase!!.child("users").child(post.author!!.uid!!).setValue(user)
+           // feedFragment.getPosts()
+        }?.addOnFailureListener {
+        }
+    }
+    private fun createNotification(notification: Notification) {
+        if (notification?.id == null) {
+            return;
+        }
+        mDatabase = Firebase.database.reference;
+        mDatabase!!.child("notifications").child(notification.id!!).setValue(notification)
+    }
+
+    private fun toggleFollow(post: Post?) {
+        if (post == null) {
+            return;
+        }
+        updateFollow(post, cometChatUserId)
+    }
+
+    private fun updateLikes(post: Post?, cometChatUserId: String?,  viewHolder : PostAdapter.ViewHolder, context:View) {
+        if (post == null || cometChatUserId == null) {
+            return
+        }
+        val updatedLikes = ArrayList<String>()
+        if (post.likes == null || post.likes!!.size == 0) {
+            updatedLikes.add(cometChatUserId)
+        } else if (post.hasLiked == true) {
+            val heartIcon = R.drawable.heart
+            Glide.with(context)
+                .load(heartIcon)
+                .into(viewHolder!!.heartIv);
+            for (like in post.likes!!) {
+                if (!like.equals(cometChatUserId)) {
+                    updatedLikes.add(like)
+                }
+            }
+        } else if (post.hasLiked == false) {
+            val heartIcon = R.drawable.heart_active
+            Glide.with(context)
+                .load(heartIcon)
+                .into(viewHolder!!.heartIv);
+            for (like in post.likes!!) {
+                updatedLikes.add(like)
+            }
+            updatedLikes.add(cometChatUserId)
+            if (post.author!!.uid !== cometChatUserId) {
+                val cometChatUser = Firebase.auth.currentUser
+                val notificationId = UUID.randomUUID()
+                val notificationMessage = cometChatUser!!.displayName + " has liked your post"
+                val notificationImage = cometChatUser!!.photoUrl.toString()
+                val receiverId = post.author!!.uid
+                val notification = Notification()
+                notification.notificationMessage = notificationMessage
+                notification.notificationImage = notificationImage
+                notification.id = notificationId.toString()
+                notification.receiverId = receiverId
+                createNotification(notification)
+            }
+        }
+        post.likes = updatedLikes
+        post.nLikes = updatedLikes.size
+        mDatabase = Firebase.database.reference;
+        mDatabase!!.child("posts").child(post.id!!).setValue(post)
+    }
+
+    private fun toggleLike(post: Post?, holder : PostAdapter.ViewHolder, view: View) {
+        if (post == null) {
+            return;
+        }
+        //check if user has liked post
+        hasLiked(post, cometChatUserId)
+        updateLikes(post, cometChatUserId, holder, view)
+    }
+
+    private fun getFirstQuery() = mBaseQuery.limitToFirst(5)
+    private fun getLastQuery() = mBaseQuery.limitToLast(5)
+
+    override fun onStart() {
+        super.onStart()
+        mAdapter.startListening()
     }
 
     override fun onCreateView(
@@ -51,8 +278,8 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        initFirebaseDatabase()
-        getPosts()
+        //initFirebaseDatabase()
+        //getPosts()
     }
 
     private fun initViews() {
@@ -61,6 +288,15 @@ class FeedFragment : Fragment() {
         pDialog!!.setCanceledOnTouchOutside(false)
 
         postRv = requireView().findViewById(R.id.postRv)
+        postRv!!.layoutManager = LinearLayoutManager(this.context)
+
+        // lastFirstVisiblePosition = postRv.layoutManager.find
+        val cometChatUser = Firebase.auth.currentUser
+        val cometChatUserId = cometChatUser!!.uid
+        postRv!!.adapter = mAdapter
+        postRv!!.layoutManager!!.onRestoreInstanceState(lastInstanceState)
+
+        pDialog!!.dismiss()
     }
 
     private fun initFirebaseDatabase() {
@@ -72,11 +308,19 @@ class FeedFragment : Fragment() {
         if (posts == null || posts.size == 0) {
             return;
         }
+        if(!firstInit){
+            return;
+        }
+        firstInit = false;
         postRv!!.layoutManager = LinearLayoutManager(this.context)
+
+       // lastFirstVisiblePosition = postRv.layoutManager.find
         val cometChatUser = Firebase.auth.currentUser
         val cometChatUserId = cometChatUser!!.uid
         adapter = this.context?.let { PostAdapter(this, mDatabase!!, it, posts, cometChatUserId) }
-        postRv!!.adapter = adapter
+        postRv!!.adapter = mAdapter
+        postRv!!.layoutManager!!.onRestoreInstanceState(lastInstanceState)
+
         pDialog!!.dismiss()
     }
 
@@ -142,6 +386,9 @@ class FeedFragment : Fragment() {
                                     hasLiked(post, cometChatUser.uid)
                                     posts!!.add(post)
                                 }
+                            }
+                            if(!firstInit){
+                                adapter!!.notifyDataSetChanged()
                             }
                             initRecyclerView(posts)
                             updateFollow()

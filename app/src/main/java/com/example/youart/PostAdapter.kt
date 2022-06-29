@@ -30,7 +30,8 @@ class PostAdapter(
     private var mDatabase: DatabaseReference,
     private val context: Context,
     private val posts: List<Post>,
-    private val cometChatUserId: String
+    private val cometChatUserId: String,
+    private var viewHolder : ViewHolder? = null,
 ) : RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,6 +42,7 @@ class PostAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val post = posts[position]
+        viewHolder = holder
         Glide.with(context)
             .load(post.author?.photoUrl)
             .circleCrop()
@@ -192,12 +194,20 @@ class PostAdapter(
         if (post.likes == null || post.likes!!.size == 0) {
             updatedLikes.add(cometChatUserId)
         } else if (post.hasLiked == true) {
+            val heartIcon = R.drawable.heart_active
+            Glide.with(context)
+                .load(heartIcon)
+                .into(viewHolder!!.heartIv);
             for (like in post.likes!!) {
                 if (!like.equals(cometChatUserId)) {
                     updatedLikes.add(like)
                 }
             }
         } else if (post.hasLiked == false) {
+            val heartIcon = R.drawable.heart
+            Glide.with(context)
+                .load(heartIcon)
+                .into(viewHolder!!.heartIv);
             for (like in post.likes!!) {
                 updatedLikes.add(like)
             }
