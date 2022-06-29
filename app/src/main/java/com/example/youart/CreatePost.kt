@@ -81,7 +81,7 @@ class CreatePost : AppCompatActivity() , View.OnClickListener {
         createPostBtn!!.setOnClickListener(this)
     }
 
-    private fun chooseImage() {
+    private fun chooseImage(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_DENIED){

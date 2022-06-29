@@ -103,7 +103,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
         //todo
     }
     private fun goToChat() {
-        //todo
+        intent = Intent(this@MainActivity, CreateAuction::class.java)
+        startActivity(intent)
     }
     override fun onClick(view: View?) {
         when(view!!.id) {
@@ -132,6 +133,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
             }
             R.id.notification -> {
                 val fragment = NotificationFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                    .commit()
+                return true
+            }
+            R.id.auction -> {
+                val fragment = AuctionsFragment()
                 supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
                     .commit()
                 return true

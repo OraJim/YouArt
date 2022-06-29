@@ -31,4 +31,9 @@
     <string name="follow_txt">Follow</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="startBidVal">starting at ...</string>
+    <string name="expireDate">Date of Expiry</string>
+    <string name="crAuction_btn">Create Auction</string>
+    <string name="auctionMessage_edt">Auction Describtion</string>
+    <string name="upload_sub_img">Upload your Art</string>
 </resources>

@@ -10,4 +10,6 @@ class UserModel {
     var followers: List<String>? = null
     var nFollowers: Int? = null
     var nPosts: Int? = null
+    var nAuctions: Int? = null
+    var auctions: List<String>? = null
 }
