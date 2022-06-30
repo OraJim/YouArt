@@ -13,4 +13,5 @@ class Auction {
     var highestBid :  Bid? = null
     var comment: String? = null
     var expires : String? =  null
+    var title : String? = null
 }

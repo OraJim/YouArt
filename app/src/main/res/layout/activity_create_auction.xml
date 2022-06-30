@@ -118,13 +118,23 @@
 
 
         <EditText
-            android:id="@+id/auctionMessage"
+            android:id="@+id/auctionTitle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="@drawable/input"
+            android:hint="@string/auctionTitile_edt"
+            android:inputType="textShortMessage"
+            android:padding="10dp" />
+
+        <EditText
+            android:id="@+id/auctionMessage"
+            android:layout_width="match_parent"
+            android:layout_height="102dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/input"
             android:hint="@string/auctionMessage_edt"
-            android:inputType="textEmailAddress"
+            android:inputType="textLongMessage"
             android:padding="10dp" />
 
         <EditText
@@ -146,7 +156,11 @@
             android:background="@drawable/input"
             android:hint="@string/expireDate"
             android:inputType="date"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"/>
 
         <Button
             android:id="@+id/createAuctionBtn"

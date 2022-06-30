@@ -36,4 +36,5 @@
     <string name="crAuction_btn">Create Auction</string>
     <string name="auctionMessage_edt">Auction Describtion</string>
     <string name="upload_sub_img">Upload your Art</string>
+    <string name="auctionTitile_edt">Auction Title</string>
 </resources>

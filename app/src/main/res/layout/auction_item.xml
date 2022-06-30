@@ -17,33 +17,45 @@
         app:srcCompat="@drawable/ic_user" />
 
     <TextView
-        android:id="@+id/post_AuthorName"
+        android:id="@+id/post_AuctionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textStyle="bold"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/post_profileView"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Shreyas Patil" />
+        tools:text="Auction Title" />
 
     <TextView
         android:id="@+id/post_Message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:maxLines="2"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/post_profileView"
-        app:layout_constraintTop_toBottomOf="@+id/post_AuthorName"
+        app:layout_constraintTop_toBottomOf="@+id/post_AuctionTitle"
         tools:text="Hi! This is body" />
+
+    <TextView
+        android:id="@+id/post_autionAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="144dp"
+        android:maxLines="2"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.238"
+        app:layout_constraintStart_toEndOf="@+id/post_AuctionTitle"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="by Post Author" />
 
     <View
         android:layout_width="match_parent"
@@ -53,5 +65,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/post_Message" />
+
+    <EditText
+        android:id="@+id/post_auctionPrice"
+        android:layout_width="105dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:inputType="numberSigned"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/post_Message"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

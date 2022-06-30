@@ -2,19 +2,24 @@ package com.example.youart
 
 import android.Manifest
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.app.ProgressDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
@@ -27,10 +32,20 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class CreateAuction : AppCompatActivity() , View.OnClickListener {
+class OwnDate {
+    var day = 0
+    var month: Int = 0
+    var year: Int = 0
+    var hour: Int = 0
+    var minute: Int = 0
+}
+
+class CreateAuction : AppCompatActivity() , View.OnClickListener, DatePickerDialog.OnDateSetListener,
+    TimePickerDialog.OnTimeSetListener {
     private val PICK_IMAGE_REQUEST = 71
     private val READ_EXTERNAL_STORAGE_REQUEST_CODE = 1001
     private var uploadContainer: LinearLayoutCompat? = null
@@ -38,9 +53,13 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener {
     private var backIv: ImageView? = null
     private var postIvTxt: TextView? = null
     private var auctionDescribTxt: TextView? = null
+    private var auctionTitleTxt : TextView? = null
     private var auctionValue: EditText? = null
     private var expirationDate: EditText? = null
     private var createPostBtn: Button? = null
+    private var pickerDate  =  OwnDate()
+    private var choosenDate  =  OwnDate()
+    private var currentInputVal = ""
 
     private var pDialog: ProgressDialog? = null
 
@@ -64,15 +83,69 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener {
         initEvents()
     }
 
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        choosenDate!!.day = dayOfMonth
+        choosenDate!!.year = year
+        choosenDate!!.month = month
+        val calendar: Calendar = Calendar.getInstance()
+        pickerDate!!.hour = calendar.get(Calendar.HOUR)
+        pickerDate!!.minute = calendar.get(Calendar.MINUTE)
+        val timePickerDialog = TimePickerDialog(this@CreateAuction, this@CreateAuction, pickerDate!!.hour, pickerDate!!.minute,
+            DateFormat.is24HourFormat(this))
+        timePickerDialog.show()
+    }
+    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        choosenDate!!.hour = hourOfDay
+        choosenDate!!.minute = minute
+        val calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"),
+            Locale.getDefault())
+        val currentLocalTime = calendar.getTime();
+        val date = SimpleDateFormat("z", Locale.getDefault())
+        val localTime: String = date.format(currentLocalTime)
+        val offset = -(calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET))
+        expirationDate!!.setText("" + choosenDate!!.day + "/" +choosenDate!!.month + "/" + choosenDate!!.year + "   " + choosenDate!!.hour + ":" +choosenDate!!.minute +" " + localTime)
+    }
+
     private fun initViews() {
         postIv = findViewById(R.id.auctionImageIv)
         auctionDescribTxt = findViewById(R.id.auctionMessage)
         auctionValue = findViewById(R.id.startBid)
+        auctionValue!!.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                Log.d("TEST", s.toString())
+                Log.d("TEST2",s.toString() )
+                if(s.toString() == null){
+                    return;
+                }
+                if (!currentInputVal.equals(s.toString())) {
+                    auctionValue!!.removeTextChangedListener(this);
+                    val numberFormat = NumberFormat.getCurrencyInstance()
+                    numberFormat.setMaximumFractionDigits(0);
+                    var num = s.toString().filter { it.isDigit()}
+                    if(num.isEmpty()){
+                        num="0"
+                    }
+                    val convert = numberFormat.format(num.toFloat())
+                    currentInputVal = convert
+                    auctionValue!!.setText(convert)
+                    auctionValue!!.addTextChangedListener(this);
+                    auctionValue!!.setSelection(auctionValue!!.length());
+
+                }
+                }
+        })
         expirationDate = findViewById(R.id.expireDate)
         postIvTxt = findViewById(R.id.auctionImgTxt)
         uploadContainer = findViewById(R.id.uploadContainer)
         createPostBtn = findViewById(R.id.createAuctionBtn)
         backIv = findViewById(R.id.backIv)
+        auctionTitleTxt = findViewById(R.id.auctionTitle)
 
         pDialog = ProgressDialog(this)
         pDialog!!.setMessage("Loading")
@@ -82,6 +155,8 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener {
         uploadContainer!!.setOnClickListener(this)
         createPostBtn!!.setOnClickListener(this)
         backIv!!.setOnClickListener(this)
+        expirationDate!!.setOnClickListener(this)
+
 
 
     }
@@ -91,8 +166,19 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener {
             R.id.uploadContainer -> chooseImage()
             R.id.createAuctionBtn -> createPost()
             R.id.backIv -> goToMainActivity()
+            R.id.expireDate -> openDatePickerDialog()
         }
     }
+    private fun openDatePickerDialog() {
+        val calendar: Calendar = Calendar.getInstance()
+        pickerDate?.day = calendar.get(Calendar.DAY_OF_MONTH)
+        pickerDate?.month = calendar.get(Calendar.MONTH)
+        pickerDate?.year = calendar.get(Calendar.YEAR)
+        val datePickerDialog =
+            DatePickerDialog(this@CreateAuction, this@CreateAuction, pickerDate.year, pickerDate!!.month,pickerDate!!.day)
+        datePickerDialog.show()
+    }
+
     private fun createFirebasePost(uuid: String?, postContent: String?) {
         if (currentUser != null) {
             val author = UserModel()
@@ -110,10 +196,11 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener {
             auction.author = author
             auction.comment = auctionDescribTxt!!.text.toString().trim()
             auction.expires = expirationDate!!.text.toString().trim()
+            auction.title = auctionTitleTxt!!.text.toString().trim()
             val startBid = Bid()
             startBid.author = author
             startBid.id = UUID.randomUUID().toString()
-            startBid.value = auctionValue!!.text.toString().toInt()
+            startBid.value = auctionValue!!.text.toString().trim()
             auction.highestBid = startBid
 
             database = Firebase.database.reference;
@@ -122,7 +209,10 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener {
             database?.child("users")?.child(currentUser.uid)?.get()?.addOnSuccessListener {
                 pDialog!!.dismiss()
                 val user = it.getValue(UserModel::class.java)
-                val list: MutableList<String> = user!!.auctions as MutableList<String>
+                var list: MutableList<String> = mutableListOf<String>()
+                if(user!!.auctions != null){
+                    list = user!!.auctions as MutableList<String>
+                }
                 user!!.nAuctions = if (user.nAuctions != null) user.nAuctions!!.plus(1) else 1
                 if (user.nAuctions!! >= 1) {
                     list.add(auction.id!!)
@@ -135,7 +225,7 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener {
             }
             Toast.makeText(
                 this@CreateAuction,
-                "Your post was created successfully",
+                "Your auction was created successfully",
                 Toast.LENGTH_LONG
             ).show()
             goToMainActivity()
@@ -172,14 +262,14 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener {
         val uploadTask = postRef.putBytes(getUploadedImage())
         uploadTask.addOnFailureListener {
             pDialog!!.dismiss()
-            Toast.makeText(this, "Cannot upload your post", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Cannot upload your Auction", Toast.LENGTH_LONG).show();
         }.addOnSuccessListener { taskSnapshot ->
             postRef.getDownloadUrl().addOnSuccessListener(OnSuccessListener { uri ->
                 if (uri != null) {
 
                     this.createFirebasePost(uuid.toString(), uri.toString())
                 }else{
-                    Toast.makeText(this@CreateAuction, "Can't Create Firebase Post", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@CreateAuction, "Can't Create Auction Post", Toast.LENGTH_LONG).show()
                 }
             })
         }
