@@ -90,6 +90,11 @@ class AuctionsFragment : Fragment() {
             override fun onBindViewHolder(holder: AuctionViewHolder, position: Int, auction: Auction) {
                 //bind the Auction Objecto to the AuctionViewHolder
                 holder.bind(auction)
+                holder.auctionListItem!!.setOnClickListener(View.OnClickListener {
+                    val fragment = AuctionItemFragment.newInstance(auction.id!!, "")
+                    activity?.supportFragmentManager?.beginTransaction()!!.replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                        .commit()
+                })
             }
         }
     }

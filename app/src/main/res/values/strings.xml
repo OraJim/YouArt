@@ -37,4 +37,6 @@
     <string name="auctionMessage_edt">Auction Describtion</string>
     <string name="upload_sub_img">Upload your Art</string>
     <string name="auctionTitile_edt">Auction Title</string>
+    <string name="bid_btn">Bid</string>
+    <string name="text_place_bid">Place Bid</string>
 </resources>

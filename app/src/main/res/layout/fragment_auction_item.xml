@@ -1,14 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     tools:context=".AuctionItemFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <ImageView
+            android:id="@+id/item_auctionItemPicture"
+            android:layout_width="294dp"
+            android:layout_height="249dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_baseline_camera_enhance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/item_AuctionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_auctionItemPicture"
+            tools:text="Auction Title" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="31dp"
+            app:layout_constraintTop_toBottomOf="@+id/item_AuctionTitle"
+            tools:layout_editor_absoluteX="0dp">
+
+            <ImageView
+                android:id="@+id/item_profileView"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_user" />
+
+            <TextView
+                android:id="@+id/item_auctionAuthor"
+                android:layout_width="306dp"
+                android:layout_height="41dp"
+                android:layout_marginStart="33dp"
+                android:maxLines="4"
+                android:textSize="20sp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/item_profileView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.533"
+                tools:text="by Post Author" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <EditText
+            android:id="@+id/item_auctionPrice"
+            android:layout_width="88dp"
+            android:layout_height="67dp"
+            android:layout_marginTop="152dp"
+            android:layout_marginEnd="28dp"
+            android:ems="10"
+            android:inputType="numberSigned"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+        <TextView
+            android:id="@+id/item_Message"
+            android:layout_width="261dp"
+            android:layout_height="114dp"
+            android:layout_marginBottom="24dp"
+            android:maxLines="2"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toTopOf="@+id/item_auctionPrice"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="Hi! This is body" />
+
+        <Button
+            android:id="@+id/bid_button"
+            android:layout_width="195dp"
+            android:layout_height="66dp"
+            android:layout_marginStart="32dp"
+            android:background="@drawable/bid_button"
+            android:radius="30dp"
+            android:text="@string/bid_btn"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/item_auctionPrice"
+            app:layout_constraintHorizontal_bias="0.073"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_Message"
+            app:layout_constraintVertical_bias="0.96" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

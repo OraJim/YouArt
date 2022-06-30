@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable-v24/ic_email.xml" value="0.2985" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/arrow_back.xml" value="0.1185" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/bid_button.xml" value="0.1395" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/dot.xml" value="0.1595" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/ic_arrow_back.xml" value="0.278" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/drawable/ic_auction_svgrepo_com.xml" value="0.1185" />
@@ -22,12 +23,14 @@
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/activity_profile_page_acitvity.xml" value="0.2" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/activity_register.xml" value="0.2850467289719626" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/auction_item.xml" value="0.3" />
-        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_auction_item.xml" value="0.33055555555555555" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/dialog_bid.xml" value="0.3611111111111111" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_auction_item.xml" value="0.268" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_auctions.xml" value="0.2324074074074074" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_auctions_list.xml" value="0.2324074074074074" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_bid_dialog.xml" value="0.3611111111111111" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_feed.xml" value="0.27037037037037037" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_notification.xml" value="0.27037037037037037" />
-        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_profile_page.xml" value="0.36" />
+        <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/fragment_profile_page.xml" value="0.2" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/notification_item.xml" value="0.27037037037037037" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/post_item.xml" value="0.27037037037037037" />
         <entry key="..\:/Users/Jimmy/AndroidStudioProjects/YouArt/app/src/main/res/layout/profile_post_item.xml" value="0.25833333333333336" />
