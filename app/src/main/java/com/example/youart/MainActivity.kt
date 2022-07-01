@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -19,7 +20,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 
-class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener  {
+class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private lateinit var auth: FirebaseAuth
     lateinit var storage: FirebaseStorage
     lateinit var currentUser: FirebaseUser
@@ -27,6 +28,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
     private var chatIv: ImageView? = null
     private var logoutIv: ImageView? = null
     private var bottomNavigationView: BottomNavigationView? = null
+    /* The activity that creates an instance of this dialog fragment must
+     * implement this interface in order to receive event callbacks.
+     * Each method passes the DialogFragment in case the host needs to query it. */
+    interface NoticeDialogListener {
+        fun onDialogPositiveClick(dialog: DialogFragment, bidVal: String)
+        fun onDialogNegativeClick(dialog: DialogFragment)
+    }
 
     private var pDialog: ProgressDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {

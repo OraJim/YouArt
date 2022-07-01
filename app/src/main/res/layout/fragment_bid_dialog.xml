@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:padding="?dialogPreferredPadding">
 
-    <TextView
-        android:id="@+id/textView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_place_bid"
-        android:textSize="20sp" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/bid_value"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
-        android:hint="@string/startBidVal"
-        android:inputType="number|numberDecimal"
-        android:minHeight="48dp"
-        android:textSize="14sp" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_place_bid"
+            android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/dialog_bid_btn"
-        android:background="@drawable/bid_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/bid_btn" />
+        <EditText
+            android:id="@+id/bid_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
+            android:hint="@string/startBidVal"
+            android:inputType="number|numberDecimal"
+            android:minHeight="48dp"
+            android:textSize="14sp" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/dialog_bid_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bid_button"
+            android:text="@string/bid_btn" />
+
+    </LinearLayout>
+</RelativeLayout>

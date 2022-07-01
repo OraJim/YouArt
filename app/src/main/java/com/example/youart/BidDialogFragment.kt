@@ -2,6 +2,7 @@ package com.example.youart
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
@@ -12,13 +13,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import java.text.NumberFormat
 
 class BidDialogFragment : DialogFragment() {
     private var priceTxt : EditText? = null
-    private var currentInputVal = ""
+    private var bidBtn : Button? = null
+    var currentInputVal = ""
+    internal lateinit var listener: MainActivity.NoticeDialogListener
+
+
+    override fun onStart() {
+        super.onStart()
+
+        dialog?.window?.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -29,6 +41,12 @@ class BidDialogFragment : DialogFragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bidBtn = view.findViewById(R.id.dialog_bid_btn)
+        bidBtn!!.setOnClickListener(View.OnClickListener {
+            //make the bid post
+            val listener = targetFragment as MainActivity.NoticeDialogListener
+            listener.onDialogPositiveClick(this, priceTxt!!.text.toString())
+        })
         priceTxt = view.findViewById(R.id.bid_value)
         priceTxt!!.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -60,6 +78,10 @@ class BidDialogFragment : DialogFragment() {
                 }
             }
         })
+    }
+
+    public fun getBid (): String? {
+        return priceTxt!!.text.toString();
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

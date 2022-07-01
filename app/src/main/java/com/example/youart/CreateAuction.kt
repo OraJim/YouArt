@@ -97,13 +97,12 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener, DatePickerDial
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
         choosenDate!!.hour = hourOfDay
         choosenDate!!.minute = minute
-        val calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"),
+        val calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"),
             Locale.getDefault())
         val currentLocalTime = calendar.getTime();
         val date = SimpleDateFormat("z", Locale.getDefault())
         val localTime: String = date.format(currentLocalTime)
-        val offset = -(calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET))
-        expirationDate!!.setText("" + choosenDate!!.day + "/" +choosenDate!!.month + "/" + choosenDate!!.year + "   " + choosenDate!!.hour + ":" +choosenDate!!.minute +" " + localTime)
+        expirationDate!!.setText("" + choosenDate!!.day + "/" +choosenDate!!.month + "/" + choosenDate!!.year + " " + choosenDate!!.hour + ":" +choosenDate!!.minute +" " + localTime)
     }
 
     private fun initViews() {

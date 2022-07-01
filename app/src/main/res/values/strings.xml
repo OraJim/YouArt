@@ -39,4 +39,6 @@
     <string name="auctionTitile_edt">Auction Title</string>
     <string name="bid_btn">Bid</string>
     <string name="text_place_bid">Place Bid</string>
+    <string name="txt_cur_Price">Current Price:</string>
+    <string name="txt_expires">expires in:</string>
 </resources>
