@@ -152,6 +152,8 @@ class ProfilePageFragment : Fragment() {
                                     .circleCrop()
                                     .into(authorAvatarIv!!)
                                 authorAvatarIv!!.setImageBitmap(bmp)
+                                nPostsTxt?.text = if (profileUser!!.nPosts !== null) profileUser!!.nPosts.toString() else "0"
+                                nFollowersTxt?.text = if (profileUser!!.nFollowers !== null) profileUser!!.nFollowers.toString() else "0"
                                 getPosts(1)
                             }.addOnFailureListener {
                                 // Handle any errors

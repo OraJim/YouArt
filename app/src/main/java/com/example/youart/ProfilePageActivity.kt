@@ -1,7 +1,9 @@
 package com.example.youart
 import android.app.Activity
+import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -23,10 +25,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -36,12 +41,14 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
     private var postIv: ImageView? = null
     private var backIv: ImageView? = null
     private var videoIv: ImageView? = null
+    private var logoutIv: ImageView? = null
 
     private var postBottomLine: View? = null
     private var videoBottomLine: View? = null
 
     private var nPostsTxt: TextView? = null
     private var nFollowersTxt: TextView? = null
+    private var followTxt : TextView?=  null
 
     private var postRv: RecyclerView? = null
     private var mDatabase: DatabaseReference? = null
@@ -78,9 +85,29 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when(view!!.id) {
             R.id.backIv -> goToHomeFeed()
-         //   R.id.logoutIv -> logout()
+            R.id.logoutIv -> logout()
           //  R.id.chatIv -> goToChat()
         }
+    }
+    private fun logout() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setMessage("Do you want to logout ?")
+            .setCancelable(false)
+            .setPositiveButton("Proceed", DialogInterface.OnClickListener {
+                    dialog, id -> handleLogout()
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener {
+                    dialog, id -> dialog.cancel()
+            })
+        val alert = dialogBuilder.create()
+        alert.setTitle("Logout")
+        alert.show()
+    }
+    private fun handleLogout() {
+        //todo
+        auth.signOut();
+        intent = Intent(this@ProfilePageActivity, LogIn::class.java)
+        startActivity(intent)
     }
     private fun goToHomeFeed(){
         Log.d("GOHOOME", "TRYING")
@@ -90,9 +117,12 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
     private fun initViews() {
         val view = this
         backIv = findViewById(R.id.backIv)
+        logoutIv = findViewById(R.id.logoutIv)
+        logoutIv!!.setOnClickListener(this)
         authorAvatarIv = view.findViewById(R.id.authorAvatarIv)
         nPostsTxt = view.findViewById(R.id.nPostsTxt)
         nFollowersTxt = view.findViewById(R.id.nFollowersTxt)
+        followTxt = view.findViewById(R.id.user_followTxt)
         postIv = view.findViewById(R.id.postIv)
         videoIv = view.findViewById(R.id.videoIv)
         postBottomLine = view.findViewById(R.id.postBottomLine)
@@ -100,7 +130,6 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
         postRv = view.findViewById(R.id.profilePostRv)
 
         videoBottomLine?.isVisible = false
-
 
         pDialog = ProgressDialog(view)
         pDialog!!.setMessage("Loading")
@@ -119,6 +148,55 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
             postBottomLine?.isVisible = false
             getPosts(2)
         })
+        followTxt?.setOnClickListener(View.OnClickListener {
+            updateFollow(currentUser.uid)
+        })
+    }
+
+    private fun updateFollow(cometChatUserId: String?) {
+        if (cometChatUserId == null) {
+            return
+        }
+        val user = profileUser
+        val updatedFollow = ArrayList<String>()
+        if (user?.followers == null || user?.followers!!.size == 0) {
+            updatedFollow.add(cometChatUserId)
+        } else if (user?.followers!!.contains(cometChatUserId)) {
+            for (follower in user.followers!!) {
+                if (!follower.equals(cometChatUserId)) {
+                    updatedFollow.add(follower)
+                }
+            }
+        } else if (!user?.followers!!.contains(cometChatUserId)) {
+            for (follower in user.followers!!) {
+                updatedFollow.add(follower)
+            }
+            updatedFollow.add(cometChatUserId)
+            if (user.uid !== cometChatUserId) {
+                val cometChatUser = Firebase.auth.currentUser
+                val notificationId = UUID.randomUUID()
+                val notificationMessage = cometChatUser!!.displayName + " has followed you"
+                val notificationImage = cometChatUser!!.photoUrl
+                val receiverId = user.uid
+                val notification = Notification()
+                notification.notificationMessage = notificationMessage
+                notification.notificationImage = notificationImage.toString()
+                notification.id = notificationId.toString()
+                notification.receiverId = receiverId
+                createNotification(notification)
+            }
+        }
+        user?.followers = updatedFollow
+        user?.nFollowers = updatedFollow.size
+        mDatabase = Firebase.database.reference;
+        mDatabase!!.child("users").child(user!!.uid!!).setValue(user)
+    }
+    private fun createNotification(notification: Notification) {
+        if (notification?.id == null) {
+            return;
+        }
+        mDatabase = Firebase.database.reference;
+        mDatabase!!.child("notifications").child(notification.id!!).setValue(notification)
     }
 
     private fun getProfile(uid: String?, activity: Activity) {
@@ -143,6 +221,18 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
                                     .circleCrop()
                                     .into(authorAvatarIv!!)
                                 authorAvatarIv!!.setImageBitmap(bmp)
+                                nPostsTxt?.text = if (profileUser!!.nPosts !== null) profileUser!!.nPosts.toString() else "0"
+                                nFollowersTxt?.text = if (profileUser!!.nFollowers !== null) profileUser!!.nFollowers.toString() else "0"
+                                if (currentUser.uid.equals(profileUser!!.uid)) {
+                                    followTxt?.isVisible = false
+                                } else {
+                                    val updatedFollow = ArrayList<String>()
+                                    if (profileUser?.followers == null || profileUser?.followers!!.size == 0) {
+                                        followTxt?.text = "Follow"
+                                    }else{
+                                        followTxt?.text = if (profileUser?.followers!!.contains(currentUser.uid)) "Followed" else "Follow"
+                                    }
+                                }
                                 getPosts(1)
                             }.addOnFailureListener {
                                 // Handle any errors

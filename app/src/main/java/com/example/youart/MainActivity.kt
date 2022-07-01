@@ -109,6 +109,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
     }
     private fun handleLogout() {
         //todo
+        auth.signOut();
+        intent = Intent(this@MainActivity, LogIn::class.java)
+        startActivity(intent)
     }
     private fun goToChat() {
         intent = Intent(this@MainActivity, CreateAuction::class.java)
