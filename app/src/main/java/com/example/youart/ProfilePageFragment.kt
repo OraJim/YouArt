@@ -24,20 +24,9 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-// TODO: Do Home and Auction Fragment
-// Redesign Input ProfileInfo & Profile Page
-//if no Post show default add Post Icon
-//Bottom Bar needs Create Post Option (Galerie and Kamera Picker)
-//Profile Page needs Gallerie Option
-//Home Page Display Other Posts
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
 
 /**
- * A simple [Fragment] subclass.
- * Use the [ProfilePageFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Fragment showing Profile Date of current logged in user
  */
 class ProfilePageFragment : Fragment() {
     // TODO: Rename and change types of parameters

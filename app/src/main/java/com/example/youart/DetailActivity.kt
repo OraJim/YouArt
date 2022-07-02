@@ -6,7 +6,11 @@ import android.widget.ImageView
 import android.widget.VideoView
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
-
+/**
+ * Activity called when clicked on a post
+ * used tho show PostDetail View
+ * needs to be implemented yet
+ */
 class DetailActivity : AppCompatActivity() {
     private var postContentIv: ImageView? = null
     private var postContentVv: VideoView? = null
@@ -22,13 +26,7 @@ class DetailActivity : AppCompatActivity() {
         postContentVv = findViewById(R.id.postContentVv)
         val postContent = intent?.getStringExtra("postContent").toString()
         val postCategory = intent?.getIntExtra("postCategory", 0)
-        if (postCategory == 2) {
-            postContentVv?.isVisible = true
-            postContentIv?.isVisible = false
-            postContentVv?.setVideoPath(postContent)
-            postContentVv?.requestFocus()
-            postContentVv?.start()
-        } else if (postCategory == 1) {
+       if (postCategory == 1) {
             postContentIv?.isVisible = true
             postContentVv?.isVisible = false
             Glide.with(this)

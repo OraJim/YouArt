@@ -1,7 +1,9 @@
 package com.example.youart
 
 import android.net.Uri
-
+/**
+ * Db Reference Class
+ */
 class UserModel {
     var uid: String? = null
     var displayName: String? = null

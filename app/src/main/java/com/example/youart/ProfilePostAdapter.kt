@@ -14,7 +14,10 @@ import com.bumptech.glide.Glide
 import com.example.youart.R
 import com.example.youart.DetailActivity
 import com.example.youart.Post
-
+/**
+ * RecyclerViewAdapter for Posts in FeedFragment
+ * with ViewHolder included
+ */
 class ProfilePostAdapter(
     private val context: Context,
     private val posts: List<Post>,

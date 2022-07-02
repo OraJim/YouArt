@@ -32,7 +32,10 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import java.util.*
 import kotlin.collections.ArrayList
-
+/**
+ * ProfilePageActivity
+ * gets the Firebase Userid of the User to show
+ */
 class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
 
     private var profileUid: String? = ""
@@ -110,7 +113,6 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
         startActivity(intent)
     }
     private fun goToHomeFeed(){
-        Log.d("GOHOOME", "TRYING")
         val intent = Intent(this, MainActivity::class.java)
         this.startActivity(intent)
     }

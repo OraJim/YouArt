@@ -1,5 +1,7 @@
 package com.example.youart
-
+/**
+ * Db Reference Class
+ */
 class Bid {
     var id: String? = null
     var author: UserModel? = null

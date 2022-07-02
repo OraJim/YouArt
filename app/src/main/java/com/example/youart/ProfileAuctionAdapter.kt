@@ -15,7 +15,11 @@ import com.bumptech.glide.Glide
 import com.example.youart.R
 import com.example.youart.DetailActivity
 import com.example.youart.Post
-
+/**
+ * RecyclerViewAdapter for Auctions of a User
+ * used in UserProfilePage/Activity
+ * with ViewHolder included
+ */
 class ProfileAuctionAdapter(
     private val context: Context,
     private val auctions: List<Auction>,

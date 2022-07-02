@@ -24,7 +24,11 @@ import com.example.youart.Notification
 import com.firebase.ui.auth.data.model.User
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-
+/**
+ * RecyclerViewAdapter for post in main feed
+ * with ViewHolder included
+ * gets the Firebase Userid of the User to show
+ */
 class PostAdapter(
     private var feedFragment: FeedFragment,
     private var mDatabase: DatabaseReference,

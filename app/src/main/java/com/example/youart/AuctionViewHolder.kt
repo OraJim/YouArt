@@ -7,7 +7,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import java.text.NumberFormat
-
+/**
+ * ViewHolder for AuctionFragement RecyclerView
+ * of auctionItems
+ * gets the Auction-UniqueId of the Auction Item to show
+ */
 class AuctionViewHolder (itemView: View)  : RecyclerView.ViewHolder(itemView) {
     var auctionTitle : TextView = itemView.findViewById((R.id.post_AuctionTitle))
     var auctionPrice : TextView = itemView.findViewById((R.id.post_auctionPrice))

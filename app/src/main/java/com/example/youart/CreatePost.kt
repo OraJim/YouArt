@@ -31,7 +31,9 @@ import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
-
+/**
+ * Activity for Creating a new Post Entry to the Firebase Database
+ */
 class CreatePost : AppCompatActivity() , View.OnClickListener {
     private val PICK_IMAGE_REQUEST = 71
     private val READ_EXTERNAL_STORAGE_REQUEST_CODE = 1001

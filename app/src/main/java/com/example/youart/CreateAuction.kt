@@ -39,7 +39,9 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-
+/**
+ * Activity for Creating a new Auction Entry to the Firebase Database
+ */
 class OwnDate {
     var day = 0
     var month: Int = 0

@@ -18,7 +18,9 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import java.text.NumberFormat
-
+/**
+ * Dialogfragment for placing a bid
+ */
 class BidDialogFragment : DialogFragment() {
     private var priceTxt : EditText? = null
     private var bidBtn : Button? = null

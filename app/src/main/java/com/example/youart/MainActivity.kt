@@ -19,7 +19,9 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
-
+/**
+ * Main Activity holding the top toolbar and bottomnavigation View
+ */
 class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private lateinit var auth: FirebaseAuth
     lateinit var storage: FirebaseStorage

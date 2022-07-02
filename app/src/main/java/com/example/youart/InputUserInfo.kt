@@ -23,6 +23,9 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 
+/**
+ * Activity for Creating a new User Entry to the Firebase Database
+ */
 class InputUserInfo : AppCompatActivity() {
     private val PICK_IMAGE_REQUEST = 71
     private lateinit var auth: FirebaseAuth

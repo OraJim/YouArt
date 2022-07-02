@@ -26,7 +26,10 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 import java.util.*
-
+/**
+ * Activity for Loggin in a User
+ * uses Firebase Authentication
+ */
 class register : AppCompatActivity(), View.OnClickListener  {
     private val PICK_IMAGE_REQUEST = 71
     private lateinit var auth: FirebaseAuth

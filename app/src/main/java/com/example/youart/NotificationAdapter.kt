@@ -11,6 +11,10 @@ import com.bumptech.glide.Glide
 import com.example.youart.R
 import com.example.youart.Notification
 
+/**
+ * RecyclerViewAdapter for Notifications in NotifactionFragment
+ * with ViewHolder included
+ */
 class NotificationAdapter(
     private val context: Context,
     private val notifications: List<Notification>,

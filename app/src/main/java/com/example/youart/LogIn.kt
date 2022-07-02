@@ -11,7 +11,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-
+/**
+ * Activity for Loggin in a User
+ * uses Firebase Authentication
+ */
 class LogIn : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     lateinit var uMail: EditText

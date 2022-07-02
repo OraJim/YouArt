@@ -35,16 +35,13 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "auctionUid"
 private const val ARG_PARAM2 = "param2"
 
 /**
- * A simple [Fragment] subclass.
- * Use the [AuctionItemFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Fragment loaded into MainActivitys container showing an Auction Item
+ * gets the Auction-UniqueId of the Auction Item to show
  */
 class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
     // TODO: Rename and change types of parameters

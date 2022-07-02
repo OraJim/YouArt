@@ -1,7 +1,9 @@
 package com.example.youart
 
 import com.example.youart.UserModel
-
+/**
+ * Db Reference Class
+ */
 class Auction {
     var id: String? = null
     var content: String? = null
