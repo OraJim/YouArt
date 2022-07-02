@@ -10,7 +10,7 @@
         android:title="Notification" />
     <item
         android:id="@+id/profile"
-        android:icon="@drawable/ic_settings_24"
+        android:icon="@drawable/ic_user"
         android:title="Profile" />
     <item
         android:id="@+id/auction"

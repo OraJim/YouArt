@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import java.text.NumberFormat
 
 class AuctionViewHolder (itemView: View)  : RecyclerView.ViewHolder(itemView) {
     var auctionTitle : TextView = itemView.findViewById((R.id.post_AuctionTitle))
@@ -16,8 +17,11 @@ class AuctionViewHolder (itemView: View)  : RecyclerView.ViewHolder(itemView) {
     var auctionListItem : ConstraintLayout? = itemView.findViewById((R.id.auction_list_item))
 
     fun bind(auction: Auction) {
+        val numberFormat = NumberFormat.getCurrencyInstance()
+        numberFormat.setMaximumFractionDigits(0);
+        var convertet = numberFormat.format(auction.highestBid?.value.toString().filter{it.isDigit()}.toFloat())
         auctionTitle!!.text = auction.title
-        auctionPrice!!.text = auction.highestBid?.value.toString()
+        auctionPrice!!.text = convertet
         personName!!.text = auction.author!!.displayName
         auctionMessage.text = "Already " + auction.nBids + " Bids set"
         Glide.with(itemView)

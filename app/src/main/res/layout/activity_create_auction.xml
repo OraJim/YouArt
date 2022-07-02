@@ -68,7 +68,8 @@
                         android:layout_gravity="right"
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="2dp"
-                        android:src="@drawable/chat" />
+                        android:src="@drawable/chat"
+                        android:visibility="gone" />
 
                     <ImageView
                         android:id="@+id/logoutIv"

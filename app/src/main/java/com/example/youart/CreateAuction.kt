@@ -34,6 +34,10 @@ import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class OwnDate {
@@ -86,7 +90,7 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener, DatePickerDial
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         choosenDate!!.day = dayOfMonth
         choosenDate!!.year = year
-        choosenDate!!.month = month
+        choosenDate!!.month = month +1
         val calendar: Calendar = Calendar.getInstance()
         pickerDate!!.hour = calendar.get(Calendar.HOUR)
         pickerDate!!.minute = calendar.get(Calendar.MINUTE)
@@ -97,12 +101,17 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener, DatePickerDial
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
         choosenDate!!.hour = hourOfDay
         choosenDate!!.minute = minute
+        /*
         val calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"),
             Locale.getDefault())
         val currentLocalTime = calendar.getTime();
         val date = SimpleDateFormat("z", Locale.getDefault())
         val localTime: String = date.format(currentLocalTime)
-        expirationDate!!.setText("" + choosenDate!!.day + "/" +choosenDate!!.month + "/" + choosenDate!!.year + " " + choosenDate!!.hour + ":" +choosenDate!!.minute +" " + localTime)
+       */
+        val endDateTime = LocalDateTime.of(choosenDate.year, choosenDate.month, choosenDate.day, choosenDate.hour, choosenDate.minute)
+        val formatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")
+        //"" + choosenDate!!.day + "/" +choosenDate!!.month + "/" + choosenDate!!.year + " " + choosenDate!!.hour + ":" +choosenDate!!.minute )//+" " + localTime)
+        expirationDate!!.setText(endDateTime.format(formatter))
     }
 
     private fun initViews() {
@@ -194,12 +203,16 @@ class CreateAuction : AppCompatActivity() , View.OnClickListener, DatePickerDial
             auction.nBids = 0
             auction.author = author
             auction.comment = auctionDescribTxt!!.text.toString().trim()
-            auction.expires = expirationDate!!.text.toString().trim()
+            //try to safe time in uniform format
+            val endDateTime = LocalDateTime.of(choosenDate.year, choosenDate.month, choosenDate.day, choosenDate.hour, choosenDate.minute)
+            val zdt : ZonedDateTime = endDateTime.atZone(ZoneId.of("America/Los_Angeles"))//location of Server
+            val endText = zdt.toInstant().toEpochMilli()
+            auction.expires = endText.toString().trim()
             auction.title = auctionTitleTxt!!.text.toString().trim()
             val startBid = Bid()
             startBid.author = author
             startBid.id = UUID.randomUUID().toString()
-            startBid.value = auctionValue!!.text.toString().trim()
+            startBid.value = auctionValue!!.text.toString().filter{it.isDigit()}.trim()
             auction.highestBid = startBid
 
             database = Firebase.database.reference;

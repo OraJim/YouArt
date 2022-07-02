@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
     private var chatIv: ImageView? = null
     private var logoutIv: ImageView? = null
     private var bottomNavigationView: BottomNavigationView? = null
+    private var auctionUid : String? = null
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
@@ -47,9 +48,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
             //reload Main page to Real Main Page of Loged in User
             //reload();
         }
+        if(intent?.getStringExtra("auctionUid") != null) {
+            auctionUid = intent?.getStringExtra("auctionUid").toString()
+        }
         initViews()
         initEvents()
-        initFragment(savedInstanceState)
+        initFragment(savedInstanceState, auctionUid)
     }
 
     private fun initViews() {
@@ -69,10 +73,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, BottomNavigation
         logoutIv!!.setOnClickListener(this)
         bottomNavigationView!!.setOnNavigationItemSelectedListener(this)
     }
-    private fun initFragment(savedInstanceState: Bundle?) {
-        if (savedInstanceState == null) {
+    private fun initFragment(savedInstanceState: Bundle?, aid : String?) {
+        if (savedInstanceState == null && aid == null) {
             val fragment = FeedFragment()
             supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                .commit()
+        }else if(aid != null){
+            //Load the AuctionItemFragment & set the BOttomNavigationItem to Active
+            bottomNavigationView!!.setSelectedItemId(R.id.auction);
+            val fragment = AuctionItemFragment.newInstance(aid!!, "")
+            supportFragmentManager?.beginTransaction()!!.replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
                 .commit()
         }
     }

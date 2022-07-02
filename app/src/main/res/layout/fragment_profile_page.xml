@@ -131,7 +131,7 @@
                         android:id="@+id/videoIv"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/play_active" />
+                        android:src="@drawable/new_auction" />
 
                     <View
                         android:id="@+id/videoBottomLine"

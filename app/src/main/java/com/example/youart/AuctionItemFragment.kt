@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -24,14 +25,16 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import org.junit.rules.Timeout.millis
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -66,6 +69,7 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
     private var bidButton : Button? = null
     private var countDownTimer : CountDownTimer?  = null
     private var countdownRunning = false
+    private var bottomNavigationView: BottomNavigationView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +93,8 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+      //  bottomNavigationView =  getActivity()?.findViewById(R.id.bottomNavigationView)
+      //  bottomNavigationView?.setSelectedItemId(R.id.auction);
         return inflater.inflate(R.layout.fragment_auction_item, container, false)
     }
 
@@ -113,6 +119,7 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
         auctionnBidsTxt = view.findViewById((R.id.item_nBids))
 
 
+
         pDialog = ProgressDialog(this.context)
         pDialog!!.setMessage("Loading")
         pDialog!!.setCanceledOnTouchOutside(false)
@@ -131,16 +138,16 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     override fun onDialogPositiveClick(dialog: DialogFragment, bidVal : String) {
         // User touched the dialog's positive button
-        Log.d("DIALOGBACK", dialog.toString())
-        Log.d("DIALOGBACL", bidVal)
         dialog.dismiss()
-        var highestVal = auctionItem!!.highestBid!!.value!!.filter { it.isDigit()}
-        val numberFormat = NumberFormat.getCurrencyInstance()
-        numberFormat.setMaximumFractionDigits(0);
-        highestVal = numberFormat.format(highestVal.toFloat())
+        var highestVal = auctionItem!!.highestBid!!.value!!.filter{it.isDigit()}
+        //val numberFormat = NumberFormat.getCurrencyInstance()
+        //numberFormat.setMaximumFractionDigits(0);
+        //numberFormat.format(highestVal.toFloat())
         var currentBid = bidVal.filter { it.isDigit()}
-        currentBid = numberFormat.format(currentBid.toFloat())
-        if(highestVal>currentBid){
+        //currentBid = numberFormat.format(currentBid.toFloat())
+        Log.d("DIALOGBACK", dialog.toString())
+        Log.d("DIALOGBACL", highestVal +" "+ currentBid)
+        if(highestVal.toFloat()>currentBid.toFloat()){
             Toast.makeText(
                 this@AuctionItemFragment.context,
                 "Your Bid was too low",
@@ -154,6 +161,8 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
     fun postBid(bidVal : String){
         if (currentUser != null) {
             val author = UserModel()
+            var b :Float? = null
+            var h :Float? = null
             author.uid = currentUser.uid
             author.photoUrl = currentUser.photoUrl.toString()
             author.displayName = currentUser.displayName
@@ -161,7 +170,7 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
             val startBid = Bid()
             startBid.author = author
             startBid.id = UUID.randomUUID().toString()
-            startBid.value = bidVal
+            startBid.value = bidVal.filter{it.isDigit()}
             startBid.auctionId = auctionUid
 
             mDatabase = Firebase.database.reference;
@@ -181,22 +190,35 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
                 }
                 else { auction.bids  = listOf(startBid.id!!)}
                 var highestVal = auction!!.highestBid!!.value!!.filter { it.isDigit()}
-                val numberFormat = NumberFormat.getCurrencyInstance()
-                numberFormat.setMaximumFractionDigits(0);
-                highestVal = numberFormat.format(highestVal.toFloat())
+                //val numberFormat = NumberFormat.getCurrencyInstance()
+                //numberFormat.setMaximumFractionDigits(0);
+                //highestVal = numberFormat.format(highestVal.toFloat())
                 val currentBid = bidVal.filter { it.isDigit()}
-                if(highestVal < numberFormat.format(currentBid.toFloat())){
+                b = currentBid.toFloat()
+                h = highestVal.toFloat()
+                if(highestVal.toFloat() < currentBid.toFloat()){
+                    Log.d("POSTBID", "NEW BID HIGHER" + highestVal + "is" +currentBid )
                     auction.highestBid = startBid
                 }
                 mDatabase!!.child("auctions").child(auctionUid!!).setValue(auction)
+                Log.d("INFODIA", "bidvals" + b+ h)
+                if(b != null && h!= null && b!!>h!!){
+                    Toast.makeText(
+                        this@AuctionItemFragment.context,
+                        "Your Bid was placed successfully",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }else{
+                    Toast.makeText(
+                        this@AuctionItemFragment.context,
+                        "Cannot place your bid",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    pDialog!!.dismiss()
+                }
             }?.addOnFailureListener {
                 pDialog!!.dismiss()
             }
-            Toast.makeText(
-                this@AuctionItemFragment.context,
-                "Your Bid was placed successfully",
-                Toast.LENGTH_LONG
-            ).show()
         } else {
             Toast.makeText(
                 this@AuctionItemFragment.context,
@@ -244,12 +266,13 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
         val self = this
         auctionItem = item
         auctionAuthor = auctionItem!!.author
-        Log.d("ImageTest", "ImageUri is:" + auctionItem?.content.toString())
-        Log.d("ImageTest", "User is:" + auctionAuthor)
         auctionTitleTxt!!.text = auctionItem!!.title
         auctionAuthorTxt!!.text = auctionAuthor!!.displayName
         auctionDescribTxt!!.text = auctionItem!!.comment
-        auctionValueTxt!!.text = auctionItem!!.highestBid!!.value
+        val numberFormat = NumberFormat.getCurrencyInstance()
+        numberFormat.setMaximumFractionDigits(0);
+        val convert = numberFormat.format(auctionItem!!.highestBid!!.value!!.filter{it.isDigit()}.toFloat())
+        auctionValueTxt!!.text = convert//auctionItem!!.highestBid!!.value
         auctionnBidsTxt!!.text = auctionItem!!.nBids!!.toString() + " Bids"
 
         if(countdownRunning && countDownTimer != null) {
@@ -259,11 +282,8 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
         //TODO calc Miliseconds until end from auction.expires
         Log.d("TESTCOUNTER", auctionItem!!.expires.toString())
         val current = LocalDateTime.now()
-        val  dateFormat = "dd/MM/yyyy HH:mm z"
-        val END_TIME_FORMATTER = DateTimeFormatter.ofPattern(dateFormat)
-        //Instance with given zone auctionItem!!.expires
-        //DATE_TIME_FORMATTER.timeZone = TimeZone.getTimeZone("UTC")
-        val endDate = LocalDateTime.parse(auctionItem!!.expires, END_TIME_FORMATTER)
+        val instant: Instant = Instant.ofEpochMilli(auctionItem!!.expires!!.toLong())
+        val endDate: LocalDateTime = instant.atZone(ZoneId.of("America/Los_Angeles")).toLocalDateTime()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
         val curFormatted = current.format(formatter)
         var difSeconds : Long = 0
@@ -309,7 +329,7 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
             Log.d("ImageTest", "ByteSize IT is:" + it.size)
             val bmp = BitmapFactory.decodeByteArray(it, 0, it.size);
             Log.d("ImageTest", "ByteSize Pic is:" + it.size)
-            Glide.with(self)
+            Glide.with(this@AuctionItemFragment)
                 .load(bmp)
                 .into(auctionImage!!)
             auctionImage!!.setImageBitmap(bmp)
@@ -321,7 +341,7 @@ class AuctionItemFragment : Fragment(), MainActivity.NoticeDialogListener {
         storageReference!!.getBytes(ONE_MEGABYTE).addOnSuccessListener {
             // Data for "images/island.jpg" is returned, use this as needed
             val bmp = BitmapFactory.decodeByteArray(it, 0, it.size);
-            Glide.with(self)
+            Glide.with(this@AuctionItemFragment)
                 .load(bmp)
                 .into(authorImage!!)
             authorImage!!.setImageBitmap(bmp)

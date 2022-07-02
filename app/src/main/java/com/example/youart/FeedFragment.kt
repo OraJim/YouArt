@@ -25,9 +25,8 @@ import kotlin.collections.ArrayList
 
 
 /**
- * A simple [Fragment] subclass.
- * Use the [FeedFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Feed Fragment with RecyclerView
+ * Inits PostItems via PostAdapter with FirebaseRecyclerAdapter
  */
 class FeedFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -156,13 +155,13 @@ class FeedFragment : Fragment() {
             val updatedFollow = ArrayList<String>()
             if (user?.followers == null || user?.followers!!.size == 0) {
                 updatedFollow.add(cometChatUserId)
-            } else if (post.hasFollowed == true) {
+            } else if (user?.followers!!.contains(cometChatUserId)) {
                 for (follower in user.followers!!) {
                     if (!follower.equals(cometChatUserId)) {
                         updatedFollow.add(follower)
                     }
                 }
-            } else if (post.hasFollowed == false) {
+            } else if (!user?.followers!!.contains(cometChatUserId)) {
                 for (follower in user.followers!!) {
                     updatedFollow.add(follower)
                 }
@@ -187,6 +186,7 @@ class FeedFragment : Fragment() {
             mDatabase!!.child("users").child(post.author!!.uid!!).setValue(user)
            // feedFragment.getPosts()
         }?.addOnFailureListener {
+            Log.d("error",it.toString())
         }
     }
     private fun createNotification(notification: Notification) {
@@ -362,7 +362,7 @@ class FeedFragment : Fragment() {
         }
     }
 
-    private fun updateFollow() {
+    private fun updateAllFollow() {
         val cometChatUser = Firebase.auth.currentUser
         val cometChatUserId = cometChatUser!!.uid
         for ((index, post) in posts!!.withIndex()) {
@@ -391,7 +391,7 @@ class FeedFragment : Fragment() {
                                 adapter!!.notifyDataSetChanged()
                             }
                             initRecyclerView(posts)
-                            updateFollow()
+                            updateAllFollow()
                         } else {
                             pDialog!!.dismiss()
                         }

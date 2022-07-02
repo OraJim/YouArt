@@ -255,7 +255,7 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun initRecyclerView(posts: ArrayList<Post>?) {
+    private fun initPostRecyclerView(posts: ArrayList<Post>?) {
         if (posts == null) {
             return;
         }
@@ -264,38 +264,78 @@ class ProfilePageActivity : AppCompatActivity(), View.OnClickListener {
         postRv!!.adapter = adapter
         pDialog!!.dismiss()
     }
+    private fun initAuctionRecyclerView(auctions: ArrayList<Auction>?) {
+        if (auctions == null) {
+            return;
+        }
+        postRv!!.layoutManager = GridLayoutManager(this, 3)
+        val adapter = this?.let { ProfileAuctionAdapter(it, auctions) }
+        postRv!!.adapter = adapter
+        pDialog!!.dismiss()
+    }
     fun getPosts(postCategory: Int){
         val cometChatUser = profileUser//currentUser
         val self = this
         if (cometChatUser != null) {
-            pDialog!!.show()
-            mDatabase?.child(Constants.FIREBASE_POSTS)?.orderByChild(Constants.FIREBASE_ID_KEY)
-                ?.addValueEventListener(object :
-                    ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        val posts = ArrayList<Post>()
-                        if (dataSnapshot.children.count() > 0) {
-                            for (postSnapshot in dataSnapshot.children) {
-                                val post = postSnapshot.getValue(Post::class.java)
-                                if (post != null && post.author!!.uid.equals(cometChatUser.uid)) {
-                                    posts.add(post)
+            if(postCategory == 1) {
+                pDialog!!.show()
+                mDatabase?.child(Constants.FIREBASE_POSTS)?.orderByChild(Constants.FIREBASE_ID_KEY)
+                    ?.addValueEventListener(object :
+                        ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val posts = ArrayList<Post>()
+                            if (dataSnapshot.children.count() > 0) {
+                                for (postSnapshot in dataSnapshot.children) {
+                                    val post = postSnapshot.getValue(Post::class.java)
+                                    if (post != null && post.author!!.uid.equals(cometChatUser.uid)) {
+                                        posts.add(post)
+                                    }
                                 }
+                            } else {
+                                pDialog!!.dismiss()
                             }
-                        } else {
-                            pDialog!!.dismiss()
+                            initPostRecyclerView(posts)
                         }
-                        initRecyclerView(posts)
-                    }
 
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        pDialog!!.dismiss()
-                        Toast.makeText(
-                            self,
-                            "Cannot fetch list of posts",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                })
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            pDialog!!.dismiss()
+                            Toast.makeText(
+                                self,
+                                "Cannot fetch list of posts",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+            }else if(postCategory==2){
+                pDialog!!.show()
+                mDatabase?.child(Constants.FIREBASE_AUCTIONS)?.orderByChild(Constants.FIREBASE_ID_KEY)
+                    ?.addValueEventListener(object :
+                        ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val auctions = ArrayList<Auction>()
+                            if (dataSnapshot.children.count() > 0) {
+                                for (auctionSnapshot in dataSnapshot.children) {
+                                    val auction = auctionSnapshot.getValue(Auction::class.java)
+                                    if (auction != null && auction.author!!.uid.equals(cometChatUser.uid)) {
+                                        auctions.add(auction)
+                                    }
+                                }
+                            } else {
+                                pDialog!!.dismiss()
+                            }
+                            initAuctionRecyclerView(auctions)
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            pDialog!!.dismiss()
+                            Toast.makeText(
+                                self,
+                                "Cannot fetch list of posts",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+            }
         }
     }
 

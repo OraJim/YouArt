@@ -57,7 +57,7 @@ class BidDialogFragment : DialogFragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 Log.d("TEST", s.toString())
-                Log.d("TEST2",s.toString() )
+                Log.d("TEST2",s.toString().filter { it.isDigit()})
                 if(s.toString() == null){
                     return;
                 }
@@ -73,7 +73,7 @@ class BidDialogFragment : DialogFragment() {
                     currentInputVal = convert
                     priceTxt!!.setText(convert)
                     priceTxt!!.addTextChangedListener(this);
-                    priceTxt!!.setSelection(priceTxt!!.length());
+                    priceTxt!!.setSelection(priceTxt!!.length()-2);
 
                 }
             }

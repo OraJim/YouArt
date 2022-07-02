@@ -68,7 +68,8 @@
                         android:layout_gravity="right"
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="2dp"
-                        android:src="@drawable/chat" />
+                        android:src="@drawable/chat"
+                        android:visibility="invisible" />
 
                     <ImageView
                         android:id="@+id/logoutIv"
@@ -237,7 +238,7 @@
                             android:id="@+id/videoIv"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/play_active" />
+                            android:src="@drawable/new_auction" />
 
                         <View
                             android:id="@+id/videoBottomLine"

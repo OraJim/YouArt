@@ -35,12 +35,15 @@
 
     <Button
         android:id="@+id/logIn"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="64dp"
+        android:layout_marginRight="64dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:hint="@string/button_login"
         android:onClick="logInUser"
         android:text="@string/button_login"
+        android:background="@drawable/login_btn"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
